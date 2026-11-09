@@ -1,0 +1,20 @@
+% Requires: \usepackage{pgfplots} \pgfplotsset{compat=1.17} \usepgfplotslibrary{groupplots}
+% Style follows the article-1 figures: black, 0.6 pt strokes, \footnotesize, no colour.
+\begin{tikzpicture}
+\begin{groupplot}[a2, group style={group size=1 by 2, vertical sep=1.5cm}]
+\nextgroupplot[ylabel={KPI value (\%)}, xlabel={Demand (operational intents/h)}, ymin=0, ymax=105,
+  title={(a) UTM}, title style={at={(0,1)}, anchor=south west, font=\footnotesize},
+  legend style={at={(0.5,-0.42)}, anchor=north}]
+\addplot[capS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e] {figures/data/E2a_UTM_CAP.dat};
+\addplot[predS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e] {figures/data/E2a_UTM_PRED.dat};
+
+\draw[densely dotted, line width=0.6pt] (axis cs:120,0) -- (axis cs:120,105) node[pos=0.97, right, font=\scriptsize] {base case};
+\nextgroupplot[ylabel={KPI value (\%)}, xlabel={Demand (trip requests/h)}, ymin=0, ymax=105,
+  title={(b) AAM}, title style={at={(0,1)}, anchor=south west, font=\footnotesize},
+  legend style={at={(0.5,-0.42)}, anchor=north}]
+\addplot[capS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e] {figures/data/E2a_AAM_CAP.dat};
+\addplot[predS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e] {figures/data/E2a_AAM_PRED.dat};
+\legend{capacity KPI (UTM-CAP-01 / AAM-CAP-01), predictability KPI (UTM-PRED-01 / AAM-PRED-01)}
+\draw[densely dotted, line width=0.6pt] (axis cs:40,0) -- (axis cs:40,105) node[pos=0.97, right, font=\scriptsize] {base case};
+\end{groupplot}
+\end{tikzpicture}

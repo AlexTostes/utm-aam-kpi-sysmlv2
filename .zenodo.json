@@ -1,0 +1,13 @@
+{
+  "title": "UTM and AAM KPI candidates in SysML v2: model, calculability analysis and synthetic data",
+  "upload_type": "software",
+  "description": "SysML v2 library of 31 system-level KPI candidates for UTM and AAM anchored in the FAA UTM and UAM concepts of operations, the calculability analysis computed as a query over the model, synthetic data generators and experiments for four prioritized candidates, and a dashboard. Scenario values are illustrative; results are not empirical validation.",
+  "creators": [
+    {"name": "Tostes, Alex Sandro Mendes", "affiliation": "Instituto Tecnológico de Aeronáutica (ITA)"},
+    {"name": "Pleffken, Daniel Rondon", "affiliation": "Embry-Riddle Aeronautical University (ERAU)"},
+    {"name": "Cerqueira, Christopher Shneider", "affiliation": "Instituto Tecnológico de Aeronáutica (ITA)"}
+  ],
+  "license": "MIT",
+  "keywords": ["SysML v2", "MBSE", "UTM", "AAM", "UAM", "key performance indicators", "synthetic data"],
+  "access_right": "open"
+}

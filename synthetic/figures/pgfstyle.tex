@@ -1,0 +1,13 @@
+% \input once in the preamble, after \usepackage{pgfplots}
+\pgfplotsset{
+  a2/.style={width=\linewidth, height=4.2cm, font=\footnotesize, line width=0.6pt,
+    axis line style={line width=0.6pt}, tick style={line width=0.6pt, black},
+    every axis label/.append style={font=\footnotesize}, tick label style={font=\footnotesize},
+    legend style={draw=none, fill=none, font=\footnotesize, cells={anchor=west}},
+    ymajorgrids, grid style={line width=0.3pt, draw=black!15}, axis x line*=bottom, axis y line*=left,
+    error bars/error bar style={line width=0.5pt}, error bars/error mark options={rotate=90, mark size=1.5pt}},
+  capS/.style={black, solid, mark=*, mark size=1.5pt},
+  predS/.style={black, densely dashed, mark=square, mark size=1.6pt, mark options={solid}},
+  lowS/.style={black, solid, mark=*, mark size=1.5pt},
+  highS/.style={black, densely dashed, mark=triangle, mark size=2pt, mark options={solid}},
+}

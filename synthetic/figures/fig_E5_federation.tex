@@ -1,0 +1,24 @@
+% Requires: \usepackage{pgfplots} \pgfplotsset{compat=1.17} \usepgfplotslibrary{groupplots}
+% Style follows the article-1 figures: black, 0.6 pt strokes, \footnotesize, no colour.
+\begin{tikzpicture}
+\begin{groupplot}[a2, height=3.8cm, group style={group size=1 by 3, vertical sep=1.5cm}]
+\nextgroupplot[ylabel={UTM-CAP-01 (\%)}, xlabel={Message exchange failure probability (\%)}, xmin=-2, xmax=52,
+  title={(a)}, title style={at={(0,1)}, anchor=south west, font=\footnotesize}, legend pos=north west]
+\addplot[lowS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e] {figures/data/E5_CAP_3.dat};
+\addplot[highS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e] {figures/data/E5_CAP_5.dat};
+\legend{3 USSs, 5 USSs}
+\draw[densely dotted, line width=0.6pt] (axis cs:-2,78.22) -- (axis cs:42,78.22) node[right, font=\scriptsize] {single USS};
+\nextgroupplot[ylabel={UTM-PRED-01 (\%)}, xlabel={Message exchange failure probability (\%)}, xmin=-2, xmax=52,
+  title={(b)}, title style={at={(0,1)}, anchor=south west, font=\footnotesize}, legend pos=north west]
+\addplot[lowS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e] {figures/data/E5_PRED_3.dat};
+\addplot[highS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e] {figures/data/E5_PRED_5.dat};
+
+\draw[densely dotted, line width=0.6pt] (axis cs:-2,84.11) -- (axis cs:42,84.11) node[right, font=\scriptsize] {single USS};
+\nextgroupplot[ylabel={Undetected conflicts per run}, xlabel={Message exchange failure probability (\%)}, xmin=-2, xmax=52,
+  title={(c)}, title style={at={(0,1)}, anchor=south west, font=\footnotesize}, legend pos=north west]
+\addplot[lowS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e] {figures/data/E5_hidden_conflicts_3.dat};
+\addplot[highS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e] {figures/data/E5_hidden_conflicts_5.dat};
+
+
+\end{groupplot}
+\end{tikzpicture}

@@ -1,0 +1,30 @@
+% Requires: \usepackage{pgfplots} \pgfplotsset{compat=1.17} \usepgfplotslibrary{groupplots}
+% Style follows the article-1 figures: black, 0.6 pt strokes, \footnotesize, no colour.
+\begin{tikzpicture}
+\begin{groupplot}[a2, height=4.6cm, group style={group size=1 by 2, vertical sep=1.6cm}]
+\nextgroupplot[xlabel={UTM-CAP-01 (\%)}, ylabel={UTM-PRED-01 (\%)},
+  title={(a) UTM, separation buffer}, title style={at={(0,1)}, anchor=south west, font=\footnotesize},
+  legend style={at={(0.5,-0.42)}, anchor=north}, enlarge x limits=0.12, enlarge y limits=0.12]
+\addplot[lowS, nodes near coords, point meta=explicit symbolic,
+  every node near coord/.append style={font=\scriptsize, anchor=south west, xshift=1pt, yshift=1pt},
+  error bars/.cd, x dir=both, x explicit, y dir=both, y explicit]
+  table[x=x, y=y, x error=ex, y error=ey, meta=lab] {figures/data/E4_UTM_120.dat};
+\addplot[highS, nodes near coords, point meta=explicit symbolic,
+  every node near coord/.append style={font=\scriptsize, anchor=south west, xshift=1pt, yshift=1pt},
+  error bars/.cd, x dir=both, x explicit, y dir=both, y explicit]
+  table[x=x, y=y, x error=ex, y error=ey, meta=lab] {figures/data/E4_UTM_200.dat};
+
+\nextgroupplot[xlabel={AAM-CAP-01 (\%)}, ylabel={AAM-PRED-01 (\%)},
+  title={(b) AAM, schedule buffer}, title style={at={(0,1)}, anchor=south west, font=\footnotesize},
+  legend style={at={(0.5,-0.42)}, anchor=north}, enlarge x limits=0.12, enlarge y limits=0.12]
+\addplot[lowS, nodes near coords, point meta=explicit symbolic,
+  every node near coord/.append style={font=\scriptsize, anchor=south west, xshift=1pt, yshift=1pt},
+  error bars/.cd, x dir=both, x explicit, y dir=both, y explicit]
+  table[x=x, y=y, x error=ex, y error=ey, meta=lab] {figures/data/E4_AAM_40.dat};
+\addplot[highS, nodes near coords, point meta=explicit symbolic,
+  every node near coord/.append style={font=\scriptsize, anchor=south west, xshift=1pt, yshift=1pt},
+  error bars/.cd, x dir=both, x explicit, y dir=both, y explicit]
+  table[x=x, y=y, x error=ex, y error=ey, meta=lab] {figures/data/E4_AAM_60.dat};
+\legend{base demand (UTM 120 intents/h; AAM 40 requests/h), high demand (UTM 200 intents/h; AAM 60 requests/h)}
+\end{groupplot}
+\end{tikzpicture}

@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Painel de KPIs UTM e AAM</title>
+<style>
+/* Layout: header + domain tabs; per domain a summary band, a what-if panel on the base-case log, then a grid of charts. */
+:root {
+  --bg: #f7f7f5; --surface: #ffffff; --ink: #1d1d1b; --ink-2: #55544f; --ink-3: #8a8983;
+  --rule: #e3e2dd; --grid: #ecebe7; --cap: #2a78d6; --pred: #eb6834; --lo: #3987e5; --hi: #104281;
+  --band: rgba(42,120,214,.12); --band-pred: rgba(235,104,52,.14); --accent-bg: #eef4fc;
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141413; --surface: #1c1c1a; --ink: #efeee9; --ink-2: #c3c2b9; --ink-3: #8f8e87;
+  --rule: #33322f; --grid: #2a2a27; --cap: #3987e5; --pred: #e0703f; --lo: #5598e7; --hi: #9ec5f4;
+  --band: rgba(57,135,229,.18); --band-pred: rgba(224,112,63,.2); --accent-bg: #1d2633; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #141413; --surface: #1c1c1a; --ink: #efeee9; --ink-2: #c3c2b9; --ink-3: #8f8e87;
+  --rule: #33322f; --grid: #2a2a27; --cap: #3987e5; --pred: #e0703f; --lo: #5598e7; --hi: #9ec5f4;
+  --band: rgba(57,135,229,.18); --band-pred: rgba(224,112,63,.2); --accent-bg: #1d2633; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 14px/1.45 var(--font); font-variant-numeric: tabular-nums;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-block: 24px 40px; }
+header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px;
+  border-bottom: 1px solid var(--rule); padding-bottom: 16px; }
+h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -.01em; text-wrap: balance; }
+.sub { color: var(--ink-2); margin: 0; max-width: 70ch; }
+.tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 3px; }
+.tabs button { font: 600 14px var(--font); color: var(--ink-2); background: none; border: 0; border-radius: 6px; padding: 7px 16px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--accent-bg); color: var(--ink); }
+.tabs button:focus-visible, input:focus-visible { outline: 2px solid var(--cap); outline-offset: 2px; }
+.note { margin: 12px 0 0; font-size: 12.5px; color: var(--ink-3); }
+section.domain { display: none; }
+section.domain.active { display: block; }
+.band { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 20px 0; }
+.tile { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.tile .lab { font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); margin: 0 0 6px; }
+.tile .code { font: 600 13px var(--mono); color: var(--ink-2); }
+.tile .val { font-size: 30px; font-weight: 650; letter-spacing: -.02em; margin: 2px 0; }
+.tile .val small { font-size: 14px; font-weight: 500; color: var(--ink-2); }
+.tile .meta { font-size: 12.5px; color: var(--ink-2); margin: 0; }
+.chip { display: inline-block; font: 600 11.5px var(--font); border-radius: 999px; padding: 2px 8px; border: 1px solid var(--rule); color: var(--ink-2); margin-right: 4px; }
+.chip.c1 { border-color: var(--cap); color: var(--cap); }
+.chip.c2 { border-color: var(--pred); color: var(--pred); }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px; min-width: 0; }
+.card.wide { grid-column: 1 / -1; }
+.card h2 { font-size: 15px; margin: 0 0 2px; text-wrap: balance; }
+.card .desc { color: var(--ink-2); font-size: 13px; margin: 0 0 10px; max-width: 75ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; color: var(--ink-2); margin: 0 0 6px; }
+.legend span { white-space: nowrap; }
+.chart { position: relative; width: 100%; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+  padding: 6px 8px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.12); white-space: nowrap; z-index: 2; }
+.tip b { font-weight: 600; }
+.whatif { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 20px; align-items: start; }
+.ctl { display: grid; gap: 14px; }
+.ctl label { display: grid; gap: 4px; font-size: 13px; color: var(--ink-2); }
+.ctl output { font: 600 13px var(--mono); color: var(--ink); }
+.ctl input[type=range] { width: 100%; accent-color: var(--cap); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 13px; margin: 0; }
+.kv dt { color: var(--ink-2); } .kv dd { margin: 0; font-weight: 600; text-align: right; }
+.bars { display: grid; gap: 6px; font-size: 12.5px; }
+.bars .row { display: grid; grid-template-columns: minmax(0, 150px) 1fr 34px; gap: 8px; align-items: center; }
+.bars .track { height: 12px; background: var(--grid); border-radius: 3px; overflow: hidden; }
+.bars .fill { height: 100%; border-radius: 3px; }
+.bars .n { text-align: right; color: var(--ink-2); }
+.subgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+h3 { font-size: 13px; margin: 0 0 6px; color: var(--ink-2); font-weight: 600; }
+footer { margin-top: 28px; border-top: 1px solid var(--rule); padding-top: 14px; font-size: 12.5px; color: var(--ink-2); display: grid; gap: 6px; }
+footer code, .card code { font-family: var(--mono); font-size: 12px; }
+@media (max-width: 900px) { .band { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid, .subgrid { grid-template-columns: minmax(0, 1fr); } .whatif { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 460px) { .band { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Painel de KPIs UTM e AAM</h1>
+    <p class="sub">Quatro KPIs candidatos de nível de sistema, calculados com dados sintéticos gerados a partir dos modelos focados em SysML&nbsp;v2 (<code>UTM_Selected</code>, <code>AAM_Selected</code>). Médias de 30 replicações por condição, com intervalos de confiança de 95%.</p>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Domínio">
+    <button role="tab" id="tab-utm" aria-controls="utm" aria-selected="true">UTM</button>
+    <button role="tab" id="tab-aam" aria-controls="aam" aria-selected="false">AAM</button>
+  </div>
+</header>
+<p class="note">Cenários sintéticos com hipóteses ilustrativas. Os valores descrevem o comportamento do modelo, não operações reais de UTM ou AAM.</p>
+
+<section class="domain active" id="utm" role="tabpanel" aria-labelledby="tab-utm"></section>
+<section class="domain" id="aam" role="tabpanel" aria-labelledby="tab-aam"></section>
+
+<footer>
+  <div><b>Fontes.</b> <code>results/summary.csv</code> (todos os gráficos, exceto o painel de simulação) e os logs do cenário base <code>UTM_OperationIntent_base.csv</code>, <code>UTM_OperationRecord_base.csv</code>, <code>AAM_TripRequest_base.csv</code>, <code>AAM_FlightRecord_base.csv</code> (painel de simulação, uma rodada, seed 20261106), do pacote de dados sintéticos do artigo 2.</div>
+  <div><b>Definições.</b> Capacidade: demanda válida aceita (UTM) ou confirmada (AAM) dentro da janela de deslocamento Δ, sobre a demanda válida. Previsibilidade: operações concluídas cujo início (UTM) ou chegada (AAM) real fica a até τ do horário planejado ou programado. Classes de calculabilidade do experimento E1: C1, todas as entradas são compartilhadas ou arquivadas segundo os ConOps da FAA; C2, o denominador não é compartilhado.</div>
+</footer>
+</div>
+
+<script>
+const DATA = {"UTM":{"demand":{"CAP":[[20.0,96.05,1.54],[60.0,88.64,1.92],[90.0,83.79,1.55],[120.0,78.54,1.47],[150.0,74.62,1.81],[180.0,68.8,1.52],[240.0,57.8,1.38],[300.0,50.4,1.74]],"PRED":[[20.0,87.93,2.91],[60.0,87.4,2.11],[90.0,87.0,1.83],[120.0,84.42,1.56],[150.0,84.2,1.36],[180.0,82.74,2.0],[240.0,82.09,1.49],[300.0,77.47,1.61]]},"tau":[[30.0,60.42,2.26],[60.0,84.35,2.01],[120.0,91.27,1.35],[300.0,96.24,0.7]],"delta":[[0.0,61.0,1.84],[300.0,76.97,1.46],[600.0,89.54,1.22],[900.0,95.85,0.72]],"buffer":{"120":[[0.0,85.39,1.35,83.09,1.68],[30.0,80.96,1.63,83.04,2.27],[60.0,77.04,1.9,85.69,1.74],[120.0,72.18,1.8,85.86,1.6],[240.0,62.39,2.03,86.53,1.41]],"200":[[0.0,74.31,2.11,72.88,2.29],[30.0,70.8,1.51,79.94,2.14],[60.0,65.27,1.67,81.87,1.65],[120.0,57.55,1.48,85.29,1.36],[240.0,47.5,1.47,86.35,1.28]]},"federation":{"CAP":{"1":[[0.0,78.22,1.8]],"3":[[0.0,77.17,1.81],[5.0,78.37,1.33],[10.0,80.33,1.45],[20.0,80.75,1.89],[40.0,82.69,1.43]],"5":[[0.0,78.98,1.44],[5.0,79.8,1.4],[10.0,81.23,1.42],[20.0,81.69,1.62],[40.0,84.55,1.57]]},"PRED":{"1":[[0.0,84.11,1.58]],"3":[[0.0,84.13,1.99],[5.0,85.45,1.79],[10.0,83.14,1.79],[20.0,79.24,1.61],[40.0,76.23,2.39]],"5":[[0.0,86.48,1.44],[5.0,82.47,2.2],[10.0,82.8,1.82],[20.0,79.38,1.86],[40.0,76.75,2.34]]},"hidden_conflicts":{"1":[[0.0,0.0,0.0]],"3":[[0.0,0.0,0.0],[5.0,1.07,0.38],[10.0,1.83,0.49],[20.0,5.33,0.76],[40.0,9.87,1.18]],"5":[[0.0,0.0,0.0],[5.0,1.33,0.46],[10.0,2.2,0.56],[20.0,6.47,0.81],[40.0,11.8,1.65]]}},"log":{"intents":[[0,"RejectedInvalid",null],[1,"Withdrawn",0.0],[1,"Accepted",0.0],[1,"Accepted",780.0],[1,"Accepted",0.0],[1,"Accepted",780.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",420.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",360.0],[1,"Accepted",780.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",660.0],[1,"Accepted",300.0],[1,"Accepted",0.0],[1,"Accepted",420.0],[1,"Accepted",0.0],[0,"RejectedInvalid",null],[1,"Accepted",0.0],[1,"Accepted",60.0],[1,"Accepted",360.0],[1,"Accepted",0.0],[1,"Accepted",480.0],[0,"RejectedInvalid",null],[0,"RejectedInvalid",null],[1,"Accepted",0.0],[1,"Accepted",600.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",420.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",360.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",540.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",180.0],[1,"Accepted",720.0],[1,"Accepted",240.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",60.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",780.0],[1,"Accepted",0.0],[1,"RejectedConflict",null],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",780.0],[1,"Accepted",300.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",780.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",240.0],[1,"Accepted",660.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",360.0],[1,"Withdrawn",300.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",540.0],[1,"Accepted",0.0],[1,"Accepted",0.0],[1,"Accepted",0.0]],"dev":[14.5,15.1,-8.1,237.1,24.8,4.0,21.9,-9.4,4.4,-7.8,15.9,23.7,36.0,-30.3,8.0,86.0,-37.9,24.4,-21.5,183.1,-11.7,-18.5,-16.0,45.0,-18.9,154.8,-0.7,26.3,-32.2,-7.5,22.7,196.1,-23.9,2.7,-28.6,52.9,18.4,-14.6,-8.3,9.6,-49.2,33.6,108.6,105.1,-5.8,-13.2,-13.2,29.3,17.9,-18.3,16.2,7.0,20.5,3.5,28.9,60.6,-0.3,47.3,191.0,53.8,34.2,38.0,-27.3,30.7,114.7,-52.7,-29.8,46.5,-12.5,212.9,10.8,-41.3,5.6,3.8,91.9,-44.5,-16.4,98.6,50.9,36.2,47.4,-4.6,-11.1,59.0,-10.3,262.9,17.9,-5.2,-2.3,1.3,-61.8,23.3,-30.2,11.4,-78.4]}},"AAM":{"demand":{"CAP":[[10.0,92.59,4.47],[20.0,94.13,2.33],[30.0,88.9,3.19],[40.0,85.33,3.69],[50.0,77.38,4.01],[60.0,60.36,4.5],[80.0,45.11,3.35],[100.0,32.88,2.39]],"PRED":[[10.0,92.92,3.08],[20.0,92.21,2.46],[30.0,93.7,1.78],[40.0,92.29,1.48],[50.0,92.72,1.8],[60.0,90.38,1.65],[80.0,90.23,1.96],[100.0,88.02,1.86]]},"tau":[[120.0,67.84,2.7],[300.0,93.46,1.4],[600.0,98.94,0.6],[900.0,99.9,0.21]],"delta":[[0.0,50.96,4.61],[300.0,77.99,4.65],[600.0,85.72,3.51],[900.0,89.13,2.87]],"buffer":{"40":[[0.0,82.83,4.39,91.43,1.9],[120.0,83.95,4.35,92.47,1.59],[300.0,78.1,3.1,93.02,1.93],[600.0,73.27,4.16,93.61,1.67]],"60":[[0.0,66.21,4.76,87.63,2.04],[120.0,66.24,4.36,89.97,1.44],[300.0,59.8,5.82,92.69,1.38],[600.0,53.04,3.94,93.23,1.46]]},"log":{"requests":[[1,"Confirmed",240.0],[1,"Confirmed",120.0],[1,"Confirmed",60.0],[1,"Confirmed",0.0],[1,"Confirmed",0.0],[1,"Confirmed",0.0],[1,"Confirmed",0.0],[1,"Confirmed",60.0],[0,"DeniedInvalid",null],[1,"Confirmed",0.0],[1,"Confirmed",0.0],[1,"Confirmed",0.0],[1,"Confirmed",0.0],[1,"Confirmed",120.0],[1,"DeniedAirspace",null],[1,"Confirmed",0.0],[1,"DeniedAirspace",null],[1,"DeniedAirspace",null],[1,"Confirmed",120.0],[1,"Confirmed",1020.0],[1,"Confirmed",0.0],[1,"Confirmed",720.0],[1,"Confirmed",0.0],[1,"Confirmed",60.0],[1,"Confirmed",780.0],[1,"Confirmed",0.0],[1,"Confirmed",300.0],[1,"Confirmed",180.0],[1,"Confirmed",0.0],[1,"Confirmed",180.0],[1,"Confirmed",0.0],[1,"Confirmed",60.0],[1,"Confirmed",60.0],[1,"Confirmed",480.0],[1,"Confirmed",0.0],[1,"Confirmed",360.0],[1,"Confirmed",0.0],[1,"Confirmed",420.0],[1,"Confirmed",0.0],[1,"Confirmed",780.0],[1,"Confirmed",300.0],[1,"Confirmed",300.0]],"dev":[-72.8,-67.2,8.2,83.5,11.6,-36.9,-72.5,18.8,34.3,-27.1,103.7,205.5,-70.4,-81.9,-152.1,-197.6,73.1,-45.2,476.2,-110.8,144.4,-30.5,58.6,72.7,-109.8,130.2,-5.6,7.1,1077.3,34.3,416.1,-9.2,-36.7,322.4,-366.3,76.3,-6.2,2.8],"cause":["late_aircraft","boarding","en_route","boarding","boarding","boarding","late_aircraft","boarding","en_route","late_aircraft","en_route","boarding","late_aircraft","late_aircraft","late_aircraft","late_aircraft","en_route","late_aircraft","boarding","boarding","boarding","late_aircraft","en_route","en_route","boarding","en_route","late_aircraft","en_route","boarding","boarding","boarding","boarding","late_aircraft","en_route","late_aircraft","en_route","boarding","late_aircraft"]}}};
+
+const DOM = {
+  UTM: { key: "UTM", cap: "UTM-CAP-01", pred: "UTM-PRED-01", capName: "Demand Accommodation Rate", predName: "Operation-Time Predictability Rate",
+    demandUnit: "operation intents/h", base: 120, tau: 60, delta: 300, tauUnit: "s", predOn: "no início",
+    capCls: "C2", predCls: "C1", leverName: "Buffer de separação", leverFmt: v => v + " s",
+    capModel: "calc def <'UTM-CAP-01'> DemandAccommodationRate :> AccommodationRate",
+    predModel: "calc def <'UTM-PRED-01'> OperationTimePredictabilityRate :> TemporalConformanceRate",
+    scenario: "256 volumes de espaço aéreo · 3 USSs · 2% de falha de mensagem · 1 restrição dinâmica",
+    outcomes: { Accepted: "Aceito", Withdrawn: "Aceito, depois retirado", RejectedConflict: "Rejeitado: conflito", RejectedConstraint: "Rejeitado: restrição", RejectedInvalid: "Inválido" } },
+  AAM: { key: "AAM", cap: "AAM-CAP-01", pred: "AAM-PRED-01", capName: "Integrated Demand Accommodation Rate", predName: "Operational Punctuality",
+    demandUnit: "pedidos de viagem/h", base: 40, tau: 300, delta: 600, tauUnit: "min", predOn: "na chegada",
+    capCls: "C2", predCls: "C1", leverName: "Buffer de programação", leverFmt: v => (v / 60) + " min",
+    capModel: "calc def <'AAM-CAP-01'> IntegratedDemandAccommodationRate :> AccommodationRate",
+    predModel: "calc def <'AAM-PRED-01'> OperationalPunctuality :> TemporalConformanceRate",
+    scenario: "4 vertiportos · 2 pads e 4 carregadores em cada · frota de 32 · escopo do UAM ConOps",
+    outcomes: { Confirmed: "Confirmado", DeniedNoCharge: "Negado: recarga", DeniedNoAircraft: "Negado: sem aeronave", DeniedNoPad: "Negado: pad", DeniedAirspace: "Negado: espaço aéreo", DeniedInvalid: "Inválido" } },
+};
+
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs = {}, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function niceTicks(min, max, n = 5) { const span = max - min, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 2.5, 5, 10].map(m => m * mag).find(s => s >= step0); const t = []; for (let v = Math.ceil(min / step) * step; v <= max + 1e-9; v += step) t.push(+v.toFixed(6)); return t; }
+const fmt1 = v => (Math.round(v * 10) / 10).toFixed(1).replace(".", ",");
+
+/* Generic XY chart: lines with optional CI bands or error bars, hover tooltip on the nearest point. */
+function xyChart(host, o) {
+  host.innerHTML = ""; const W = Math.max(280, host.clientWidth), H = o.height || 240;
+  const m = { l: 44, r: o.rightPad || 16, t: 12, b: 40 };
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": o.label }, host);
+  const X = v => m.l + (v - o.x.min) / (o.x.max - o.x.min) * (W - m.l - m.r);
+  const Y = v => H - m.b - (v - o.y.min) / (o.y.max - o.y.min) * (H - m.t - m.b);
+  const g = el("g", {}, svg);
+  for (const t of (o.y.ticks || niceTicks(o.y.min, o.y.max))) {
+    el("line", { x1: m.l, x2: W - m.r, y1: Y(t), y2: Y(t), stroke: css("--grid"), "stroke-width": 1 }, g);
+    const tx = el("text", { x: m.l - 6, y: Y(t) + 4, "text-anchor": "end", "font-size": 11, fill: css("--ink-3") }, g); tx.textContent = (o.y.fmt || (v => v))(t);
+  }
+  for (const t of (o.x.ticks || niceTicks(o.x.min, o.x.max))) {
+    const tx = el("text", { x: X(t), y: H - m.b + 16, "text-anchor": "middle", "font-size": 11, fill: css("--ink-3") }, g); tx.textContent = (o.x.fmt || (v => v))(t);
+  }
+  el("line", { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: css("--ink-3"), "stroke-width": 1 }, g);
+  const xl = el("text", { x: (m.l + W - m.r) / 2, y: H - 6, "text-anchor": "middle", "font-size": 12, fill: css("--ink-2") }, g); xl.textContent = o.x.label;
+  const yl = el("text", { x: 12, y: (m.t + H - m.b) / 2, "text-anchor": "middle", "font-size": 12, fill: css("--ink-2"), transform: `rotate(-90 12 ${(m.t + H - m.b) / 2})` }, g); yl.textContent = o.y.label;
+  (o.refs || []).forEach(r => {
+    if (r.x !== undefined) { el("line", { x1: X(r.x), x2: X(r.x), y1: m.t, y2: H - m.b, stroke: css("--ink-3"), "stroke-dasharray": "3 3" }, g);
+      const t = el("text", { x: X(r.x) + 4, y: m.t + 10, "font-size": 11, fill: css("--ink-3") }, g); t.textContent = r.label; }
+    if (r.y !== undefined) { el("line", { x1: m.l, x2: W - m.r, y1: Y(r.y), y2: Y(r.y), stroke: css("--ink-3"), "stroke-dasharray": "3 3" }, g);
+      const t = el("text", { x: W - m.r, y: Y(r.y) - 5, "text-anchor": "end", "font-size": 11, fill: css("--ink-3") }, g); t.textContent = r.label; }
+  });
+  const pts = [];
+  o.series.forEach(s => {
+    const c = css(s.color);
+    if (s.band) { const up = s.points.map(p => `${X(p[0])},${Y(p[1] + p[2])}`), dn = s.points.slice().reverse().map(p => `${X(p[0])},${Y(p[1] - p[2])}`);
+      el("polygon", { points: up.concat(dn).join(" "), fill: c, "fill-opacity": 0.14 }, g); }
+    el("polyline", { points: s.points.map(p => `${X(p[0])},${Y(p[1])}`).join(" "), fill: "none", stroke: c, "stroke-width": 2, "stroke-dasharray": s.dash || "", "stroke-linejoin": "round" }, g);
+    s.points.forEach(p => {
+      if (s.bars) el("line", { x1: X(p[0]), x2: X(p[0]), y1: Y(p[1] - p[2]), y2: Y(p[1] + p[2]), stroke: c, "stroke-width": 1.2 }, g);
+      el("circle", { cx: X(p[0]), cy: Y(p[1]), r: 4, fill: s.hollow ? css("--surface") : c, stroke: c, "stroke-width": s.hollow ? 2 : 1.5 }, g);
+      if (s.plabel) { const t = el("text", { x: X(p[0]) + 6, y: Y(p[1]) - 8, "font-size": 10.5, fill: css("--ink-2") }, g); t.textContent = s.plabel(p); }
+      if (s.labels) { const t = el("text", { x: X(p[0]), y: Y(p[1]) - 9, "text-anchor": "middle", "font-size": 11, fill: css("--ink") }, g); t.textContent = Math.round(p[1]) + "%"; }
+      pts.push({ x: X(p[0]), y: Y(p[1]), s, p });
+    });
+  });
+  hover(host, svg, W, H, pts, o.tip, m);
+}
+
+function hover(host, svg, W, H, pts, tipFn, m) {
+  const tip = document.createElement("div"); tip.className = "tip"; tip.hidden = true; host.appendChild(tip);
+  const ring = el("circle", { r: 7, fill: "none", stroke: css("--ink"), "stroke-width": 1.5, visibility: "hidden" }, svg);
+  const move = ev => {
+    const r = svg.getBoundingClientRect(), sx = (ev.clientX - r.left) * W / r.width, sy = (ev.clientY - r.top) * H / r.height;
+    let best = null, bd = 1e9; pts.forEach(q => { const d = Math.hypot(q.x - sx, (q.y - sy) * 0.6); if (d < bd) { bd = d; best = q; } });
+    if (!best || bd > 60) { tip.hidden = true; ring.setAttribute("visibility", "hidden"); return; }
+    ring.setAttribute("cx", best.x); ring.setAttribute("cy", best.y); ring.setAttribute("visibility", "visible");
+    tip.innerHTML = tipFn(best.s, best.p); tip.hidden = false;
+    const px = best.x * r.width / W, py = best.y * r.height / H, tw = tip.offsetWidth;
+    tip.style.left = Math.min(Math.max(0, px + 12), r.width - tw) + "px"; tip.style.top = Math.max(0, py - 44) + "px";
+  };
+  svg.addEventListener("pointermove", move); svg.addEventListener("pointerleave", () => { tip.hidden = true; ring.setAttribute("visibility", "hidden"); });
+}
+
+/* Histogram of deviations with the tolerance band shaded. */
+function histChart(host, devs, tau, unitDiv, unitLabel) {
+  host.innerHTML = ""; const W = Math.max(280, host.clientWidth), H = 200, m = { l: 36, r: 12, t: 10, b: 38 };
+  const vals = devs.map(d => d / unitDiv); const lim = Math.max(3 * tau / unitDiv, ...vals.map(Math.abs)) * 1.02;
+  const lo = Math.min(-tau / unitDiv * 1.5, Math.min(...vals)), hi = lim, nb = 24, bw = (hi - lo) / nb;
+  const bins = Array.from({ length: nb }, (_, i) => ({ a: lo + i * bw, n: 0 })); vals.forEach(v => { bins[Math.min(nb - 1, Math.max(0, Math.floor((v - lo) / bw)))].n++; });
+  const ymax = Math.max(...bins.map(b => b.n)) * 1.15 || 1;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Distribuição dos desvios de horário" }, host);
+  const X = v => m.l + (v - lo) / (hi - lo) * (W - m.l - m.r), Y = v => H - m.b - v / ymax * (H - m.t - m.b);
+  const t = tau / unitDiv;
+  el("rect", { x: X(-t), y: m.t, width: X(t) - X(-t), height: H - m.t - m.b, fill: css("--pred"), "fill-opacity": 0.1 }, svg);
+  const pts = [];
+  bins.forEach(b => { const inside = b.a >= -t - 1e-9 && b.a + bw <= t + 1e-9;
+    if (b.n) el("rect", { x: X(b.a) + 1, y: Y(b.n), width: Math.max(1, X(b.a + bw) - X(b.a) - 2), height: Y(0) - Y(b.n), rx: 2, fill: inside ? css("--pred") : css("--ink-3") }, svg);
+    pts.push({ x: X(b.a + bw / 2), y: Y(b.n), s: {}, p: [b.a, b.a + bw, b.n] }); });
+  for (const v of niceTicks(lo, hi, 6)) { const tx = el("text", { x: X(v), y: H - m.b + 15, "text-anchor": "middle", "font-size": 11, fill: css("--ink-3") }, svg); tx.textContent = v; }
+  el("line", { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), stroke: css("--ink-3") }, svg);
+  [-t, t].forEach(v => el("line", { x1: X(v), x2: X(v), y1: m.t, y2: Y(0), stroke: css("--pred"), "stroke-dasharray": "3 3" }, svg));
+  const xl = el("text", { x: (m.l + W - m.r) / 2, y: H - 5, "text-anchor": "middle", "font-size": 12, fill: css("--ink-2") }, svg); xl.textContent = `Real menos planejado (${unitLabel})`;
+  hover(host, svg, W, H, pts, (s, p) => `<b>${fmt1(p[0])} a ${fmt1(p[1])} ${unitLabel}</b><br>${p[2]} operações`, m);
+}
+
+function barsList(host, rows, total) {
+  host.innerHTML = '<div class="bars">' + rows.map(r => `<div class="row"><span>${r.label}</span><div class="track"><div class="fill" style="width:${(100 * r.n / total).toFixed(1)}%;background:${r.color}"></div></div><span class="n">${r.n}</span></div>`).join("") + "</div>";
+}
+
+function tile(lab, code, val, ci, meta, chip) {
+  return `<div class="tile"><p class="lab">${lab}</p><div class="code">${code}</div><div class="val">${val}<small>${ci}</small></div><p class="meta">${chip || ""}${meta}</p></div>`;
+}
+
+function build(d) {
+  const D = DATA[d.key], sec = document.getElementById(d.key.toLowerCase());
+  const at = (arr, x) => arr.find(p => p[0] === x);
+  const capB = at(D.demand.CAP, d.base), predB = at(D.demand.PRED, d.base);
+  const tauTxt = d.tauUnit === "s" ? d.tau + " s" : d.tau / 60 + " min";
+  sec.innerHTML = `
+  <div class="band">
+    ${tile("Capacidade, cenário base", d.cap, fmt1(capB[1]) + "%", " ±" + fmt1(capB[2]), `${d.capName}. Δ = ${d.delta / 60} min.`, `<span class="chip c2">E1: ${d.capCls}</span>`)}
+    ${tile("Previsibilidade, cenário base", d.pred, fmt1(predB[1]) + "%", " ±" + fmt1(predB[2]), `${d.predName}. τ = ${tauTxt} ${d.predOn}.`, `<span class="chip c1">E1: ${d.predCls}</span>`)}
+    ${tile("Cenário base", "Demanda", d.base, " " + d.demandUnit, d.scenario + ".")}
+    ${tile("Calculabilidade (E1)", "Por que C2 na capacidade", "", "", d.key === "UTM" ? "Planos que não podem ser desconflitados nunca são compartilhados; por isso, o denominador de demanda é invisível para a USS Network." : "Pedidos que o operador não consegue atender nunca viram UAM Operational Intents; por isso, o denominador de demanda é invisível para os PSUs.")}
+  </div>
+  <div class="grid">
+    <div class="card wide">
+      <h2>Simulação sobre o log do cenário base</h2>
+      <p class="desc">Remede uma rodada do cenário base (seed 20261106) com outra tolerância τ ou outra janela de deslocamento Δ. As operações não mudam; muda só a forma como os KPIs as medem.</p>
+      <div class="whatif">
+        <div class="ctl">
+          <label>Tolerância τ <output id="${d.key}-tau-o"></output><input type="range" id="${d.key}-tau" min="${d.tauUnit === "s" ? 10 : 60}" max="${d.tauUnit === "s" ? 600 : 1200}" step="${d.tauUnit === "s" ? 10 : 30}" value="${d.tau}"></label>
+          <label>Janela de deslocamento Δ <output id="${d.key}-delta-o"></output><input type="range" id="${d.key}-delta" min="0" max="1200" step="60" value="${d.delta}"></label>
+          <dl class="kv" id="${d.key}-kv"></dl>
+          <button type="button" id="${d.key}-reset" style="justify-self:start;font:600 13px var(--font);padding:6px 12px;border-radius:6px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);cursor:pointer">Voltar aos valores propostos</button>
+        </div>
+        <div class="subgrid">
+          <div><h3>Desvio de horário das operações concluídas</h3><div class="chart" id="${d.key}-hist"></div></div>
+          <div><h3>Resultado da demanda</h3><div id="${d.key}-out"></div><p class="desc" style="margin-top:8px" id="${d.key}-outnote"></p></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>A capacidade cai mais rápido que a previsibilidade quando a demanda cresce</h2>
+      <p class="desc">Especificação do cenário base. As faixas são intervalos de confiança de 95%.</p>
+      <div class="legend"><span><i class="swatch" style="background:var(--cap)"></i>${d.cap}</span><span><i class="swatch" style="background:var(--pred)"></i>${d.pred}</span></div>
+      <div class="chart" id="${d.key}-demand"></div>
+    </div>
+    <div class="card">
+      <h2>A especificação mexe no KPI tanto quanto a demanda</h2>
+      <p class="desc">Os mesmos logs do cenário base, medidos de novo. Linha tracejada: valor proposto.</p>
+      <div class="subgrid"><div><h3>${d.pred} em função de τ</h3><div class="chart" id="${d.key}-tau-c"></div></div><div><h3>${d.cap} em função de Δ</h3><div class="chart" id="${d.key}-delta-c"></div></div></div>
+    </div>
+    <div class="card ${d.key === "AAM" ? "wide" : ""}">
+      <h2>Mais buffer compra previsibilidade à custa de acomodação</h2>
+      <p class="desc">${d.leverName} variado em dois níveis de demanda, o base e um alto. O rótulo de cada ponto é o valor do buffer; passe o mouse para ver os detalhes.</p>
+      <div class="legend" id="${d.key}-tlegend"></div>
+      <div class="chart" id="${d.key}-trade"></div>
+    </div>
+    ${d.key === "UTM" ? `<div class="card">
+      <h2>Mensagens perdidas inflam a acomodação aparente</h2>
+      <p class="desc">Probabilidade de falhar o compartilhamento de um intent aceito com outro USS. Linha tracejada: USS único.</p>
+      <div class="legend"><span><i class="swatch" style="background:var(--lo)"></i>3 USSs</span><span><i class="swatch" style="background:var(--hi)"></i>5 USSs</span></div>
+      <div class="subgrid"><div><h3>UTM-CAP-01 e UTM-PRED-01</h3><div class="chart" id="UTM-fed"></div></div><div><h3>Conflitos estratégicos não detectados por rodada</h3><div class="chart" id="UTM-hid"></div></div></div>
+    </div>` : ""}
+    <div class="card wide">
+      <h2>Rastreabilidade no modelo</h2>
+      <p class="desc"><code>${d.capModel}</code><br><code>${d.predModel}</code><br>Cada KPI se liga ao seu Performance Objective (<code>PO_Capacity</code>, <code>PO_Predictability</code>), que enquadra a KPA da ICAO, e aos atributos dos itens de dados que consome. As entradas e os parâmetros (<code>MeasurementParameters</code>: T, τ, Δ) são explícitos no modelo.</p>
+    </div>
+  </div>`;
+  d.render = () => draw(d, D);
+}
+
+function draw(d, D) {
+  const pctTip = name => (s, p) => `<b>${s.name}</b><br>${p[0]} ${name}: ${fmt1(p[1])}% ± ${fmt1(p[2])}`;
+  const dmax = D.demand.CAP.at(-1)[0];
+  xyChart(document.getElementById(d.key + "-demand"), { label: "KPI em função da demanda", x: { min: 0, max: dmax * 1.04, label: "Demanda (" + d.demandUnit + ")" },
+    y: { min: 0, max: 100, label: "Valor do KPI (%)", ticks: [0, 25, 50, 75, 100] }, refs: [{ x: d.base, label: "cenário base" }],
+    series: [{ name: d.cap, color: "--cap", points: D.demand.CAP, band: true }, { name: d.pred, color: "--pred", points: D.demand.PRED, band: true, hollow: true }],
+    tip: pctTip(d.demandUnit) });
+  const tdiv = 60, tUnit = "min";
+  xyChart(document.getElementById(d.key + "-tau-c"), { label: "Previsibilidade em função da tolerância", height: 200, rightPad: 18,
+    x: { min: 0, max: D.tau.at(-1)[0] / tdiv * 1.08, label: "τ (" + tUnit + ")" }, y: { min: 0, max: 110, label: "%", ticks: [0, 50, 100] },
+    refs: [{ x: d.tau / tdiv, label: "" }], series: [{ name: d.pred, color: "--pred", points: D.tau.map(p => [p[0] / tdiv, p[1], p[2]]), bars: true, labels: true, hollow: true }],
+    tip: (s, p) => `<b>${s.name}</b><br>τ = ${p[0]} min: ${fmt1(p[1])}% ± ${fmt1(p[2])}` });
+  xyChart(document.getElementById(d.key + "-delta-c"), { label: "Capacidade em função da janela", height: 200, rightPad: 18,
+    x: { min: 0, max: 16, label: "Δ (min)", ticks: [0, 5, 10, 15] }, y: { min: 0, max: 110, label: "%", ticks: [0, 50, 100] },
+    refs: [{ x: d.delta / 60, label: "" }], series: [{ name: d.cap, color: "--cap", points: D.delta.map(p => [p[0] / 60, p[1], p[2]]), bars: true, labels: true }],
+    tip: (s, p) => `<b>${s.name}</b><br>Δ = ${p[0]} min: ${fmt1(p[1])}% ± ${fmt1(p[2])}` });
+  const dems = Object.keys(D.buffer), cols = ["--lo", "--hi"];
+  document.getElementById(d.key + "-tlegend").innerHTML = dems.map((k, i) => `<span><i class="swatch" style="background:var(${cols[i]})"></i>demanda ${k} ${d.demandUnit}</span>`).join("");
+  const all = dems.flatMap(k => D.buffer[k]);
+  const xs = all.map(p => p[1]), ys = all.map(p => p[3]);
+  xyChart(document.getElementById(d.key + "-trade"), { label: "Trade-off capacidade-previsibilidade",
+    x: { min: Math.floor(Math.min(...xs) / 5) * 5 - 5, max: Math.ceil(Math.max(...xs) / 5) * 5 + 5, label: d.cap + " (%)" },
+    y: { min: Math.floor(Math.min(...ys) / 5) * 5 - 2, max: Math.ceil(Math.max(...ys) / 5) * 5 + 1, label: d.pred + " (%)" },
+    series: dems.map((k, i) => ({ name: "demanda " + k + " " + d.demandUnit, color: cols[i], points: D.buffer[k].map(p => [p[1], p[3], 0, p[0], p[2], p[4]]), plabel: p => d.leverFmt(p[3]) })),
+    tip: (s, p) => `<b>${d.leverName} ${d.leverFmt(p[3])}</b><br>${s.name}<br>${d.cap}: ${fmt1(p[0])}% ± ${fmt1(p[4])}<br>${d.pred}: ${fmt1(p[1])}% ± ${fmt1(p[5])}` });
+  if (d.key === "UTM") {
+    const F = D.federation;
+    xyChart(document.getElementById("UTM-fed"), { label: "Efeito da federação nos KPIs de UTM", height: 220, x: { min: -2, max: 42, label: "Falha de mensagem (%)", ticks: [0, 10, 20, 30, 40] },
+      y: { min: 70, max: 90, label: "%", ticks: [70, 75, 80, 85, 90] },
+      refs: [{ y: F.CAP["1"][0][1], label: "USS único (CAP)" }, { y: F.PRED["1"][0][1], label: "USS único (PRED)" }],
+      series: [{ name: "UTM-CAP-01, 3 USSs", color: "--lo", points: F.CAP["3"], bars: true }, { name: "UTM-CAP-01, 5 USSs", color: "--hi", points: F.CAP["5"], bars: true },
+        { name: "UTM-PRED-01, 3 USSs", color: "--lo", points: F.PRED["3"], bars: true, dash: "5 4", hollow: true }, { name: "UTM-PRED-01, 5 USSs", color: "--hi", points: F.PRED["5"], bars: true, dash: "5 4", hollow: true }],
+      tip: (s, p) => `<b>${s.name}</b><br>falha ${p[0]}%: ${fmt1(p[1])}% ± ${fmt1(p[2])}` });
+    xyChart(document.getElementById("UTM-hid"), { label: "Conflitos não detectados", height: 220, x: { min: -2, max: 42, label: "Falha de mensagem (%)", ticks: [0, 10, 20, 30, 40] },
+      y: { min: 0, max: 14, label: "Conflitos por rodada", ticks: [0, 4, 8, 12] },
+      series: [{ name: "3 USSs", color: "--lo", points: F.hidden_conflicts["3"], bars: true }, { name: "5 USSs", color: "--hi", points: F.hidden_conflicts["5"], bars: true }],
+      tip: (s, p) => `<b>${s.name}</b><br>falha ${p[0]}%: ${fmt1(p[1])} ± ${fmt1(p[2])} por rodada` });
+    const leg = document.querySelector("#utm .card:nth-of-type(5) .legend");
+    if (leg) leg.innerHTML = `<span><i class="swatch" style="background:var(--lo)"></i>3 USSs</span><span><i class="swatch" style="background:var(--hi)"></i>5 USSs</span><span>contínua: CAP · tracejada: PRED</span>`;
+  }
+  whatIf(d, D);
+}
+
+function whatIf(d, D) {
+  const tauI = document.getElementById(d.key + "-tau"), delI = document.getElementById(d.key + "-delta");
+  const L = D.log, rows = d.key === "UTM" ? L.intents : L.requests;
+  const update = () => {
+    const tau = +tauI.value, delta = +delI.value;
+    document.getElementById(d.key + "-tau-o").textContent = d.tauUnit === "s" ? tau + " s" : (tau / 60) + " min";
+    document.getElementById(d.key + "-delta-o").textContent = (delta / 60) + " min";
+    const valid = rows.filter(r => r[0] === 1), okOutcome = d.key === "UTM" ? ["Accepted", "Withdrawn"] : ["Confirmed"];
+    const acc = valid.filter(r => okOutcome.includes(r[1]) && r[2] !== null && r[2] <= delta + 1e-9).length;
+    const within = L.dev.filter(v => Math.abs(v) <= tau + 1e-9).length;
+    const cap = 100 * acc / valid.length, pred = 100 * within / L.dev.length;
+    document.getElementById(d.key + "-kv").innerHTML =
+      `<dt>${d.cap}</dt><dd style="color:var(--cap)">${fmt1(cap)}%</dd><dt>acomodados / válidos</dt><dd>${acc} / ${valid.length}</dd>` +
+      `<dt>${d.pred}</dt><dd style="color:var(--pred)">${fmt1(pred)}%</dd><dt>dentro de τ / concluídas</dt><dd>${within} / ${L.dev.length}</dd>`;
+    const unitDiv = d.tauUnit === "s" ? 1 : 60;
+    histChart(document.getElementById(d.key + "-hist"), L.dev, tau, unitDiv, d.tauUnit);
+    const counts = {}; rows.forEach(r => { counts[r[1]] = (counts[r[1]] || 0) + 1; });
+    const shifted = valid.filter(r => okOutcome.includes(r[1]) && r[2] !== null && r[2] > delta + 1e-9).length;
+    const out = Object.keys(d.outcomes).filter(k => counts[k]).map(k => ({ label: d.outcomes[k], n: counts[k], color: okOutcome.includes(k) ? css("--cap") : css("--ink-3") }));
+    barsList(document.getElementById(d.key + "-out"), out, rows.length);
+    document.getElementById(d.key + "-outnote").textContent = `${rows.length} pedidos na rodada. Dos aceitos ou confirmados, ${shifted} foram deslocados mais que Δ e não contam como acomodados.`;
+  };
+  tauI.oninput = update; delI.oninput = update;
+  document.getElementById(d.key + "-reset").onclick = () => { tauI.value = d.tau; delI.value = d.delta; update(); };
+  update();
+}
+
+const order = [DOM.UTM, DOM.AAM]; order.forEach(build);
+function show(key, push) {
+  document.querySelectorAll("section.domain").forEach(s => s.classList.toggle("active", s.id === key));
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.id === "tab-" + key));
+  const d = key === "aam" ? DOM.AAM : DOM.UTM; d.render();
+  if (push) { try { history.replaceState(null, "", "#" + key); } catch (e) {} }
+}
+document.getElementById("tab-utm").onclick = () => show("utm", true);
+document.getElementById("tab-aam").onclick = () => show("aam", true);
+const start = (location.hash || "").replace("#", "") === "aam" ? "aam" : "utm"; show(start, false);
+window.addEventListener("hashchange", () => show((location.hash || "").replace("#", "") === "aam" ? "aam" : "utm", false));
+let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(() => show(document.querySelector("section.domain.active").id, false), 150); });
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => show(document.querySelector("section.domain.active").id, false)); } catch (e) {}
+</script>
+</body>
+</html>

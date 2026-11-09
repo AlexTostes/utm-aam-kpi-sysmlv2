@@ -1,0 +1,31 @@
+% E1 calculability matrix (AAM). Requires: booktabs, tabularx, array (as in article 1).
+\begin{table*}[!t]
+\caption{Calculability of the AAM candidate KPIs from data defined in the FAA UAM ConOps v2.0 (UAM as the urban subset of AAM). Source classes: NS, network-shared; PA, provider-archived; IH, internally held by an operator or a single provider; NA, not addressed. C1: every input is NS or PA; C2: the principal quantity is NS or PA but another input is IH or NA; C3: the principal quantity is IH or NA. Inputs are author-derived from the Measurement Constructs; section references are to the UAM ConOps v2.0. The classification is analytical and has not been externally reviewed.}
+\label{tab:calc-aam}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}X>{\centering\arraybackslash}p{0.035\textwidth}@{}}
+\toprule
+\textbf{Candidate KPI} & \textbf{Principal quantity} & \textbf{Inputs [source class; ConOps section]} & \textbf{Calc.} \\
+\midrule
+AAM-AE-01 -- Population Service Accessibility & Population within access of the service & Population and ground-access data [NA; \S{}1.2.3]; Vertiport locations and corridor definitions [NS; \S{}4.3.1, \S{}4.3.7] & C3 \\
+AAM-AE-02 -- Affordability Burden Ratio & Fare relative to user income & Fares and user income [NA] & C3 \\
+AAM-CAP-01 -- Integrated Demand Accommodation Rate & Confirmed UAM Operational Intents & Confirmed UAM Operational Intents [NS; \S{}4.3.4]; Customer trip requests (denominator) [IH; \S{}4.3.2, \S{}6.1.1]; Vertiport resource availability [NS; \S{}4.3.7]; Corridor availability [NS; \S{}4.3.1, \S{}4.4]; Fleet and charging availability [NA] & C2 \\
+AAM-CE-01 -- Cost per Completed AAM Operation & Attributable system cost & System cost [NA]; Completed operations (mission-complete indication, archive) [PA; \S{}4.3.4, \S{}6.1.3] & C3 \\
+AAM-EFF-01 -- Door-to-Door Travel-Time Benefit & Door-to-door journey time & Ground access and egress times [NA]; Flight times (archived operational data) [PA; \S{}4.3.4]; Reference-mode journey time [NA] & C3 \\
+AAM-EFF-02 -- Mean AAM Operational Delay & Actual minus scheduled event times & Key event times (departure, arrival) in the confirmed intent [NS; \S{}3.2, \S{}4.3.2]; Actual departure (automated departure acquisition) and arrival [PA; \S{}6.2.2.1, \S{}6.1.2, \S{}4.3.4] & C1 \\
+AAM-ENV-01 -- Life-Cycle GHG Intensity & Life-cycle emissions per unit of output & Energy and life-cycle emission data [NA] & C3 \\
+AAM-ENV-02 -- Community Noise Exposure & Noise exposure of the population & Noise levels or acoustic model [NA; \S{}4.4]; Flight tracks [PA; \S{}6.1.2, \S{}4.3.4]; Population data [NA] & C3 \\
+AAM-FLEX-01 -- Successful Operational Replanning Rate & Successful intent updates & Updates to the UAM Operational Intent shared via the network [NS; \S{}4.4.2]; Operation outcome (mission complete) [PA; \S{}6.1.3] & C1 \\
+AAM-FLEX-02 -- Degraded-Operation Continuity Rate & Operations completed under degraded conditions & Corridor availability and vertiport open/closed status [NS; \S{}4.3.1, \S{}4.3.7]; Off-nominal notifications [NS; \S{}4.4.2]; Operation outcome (mission complete) [PA; \S{}6.1.3] & C1 \\
+AAM-GI-01 -- Successful Operational Interoperability Rate & Successful PSU-PSU, PSU-USS and FAA exchanges & Exchange attempts and results [IH; \S{}2, \S{}5] & C3 \\
+AAM-PART-01 -- Effective Stakeholder Engagement Coverage & Engaged relevant and affected stakeholders & Engagement records [NA; \S{}1.2.3, \S{}4.2, \S{}4.3.10] & C3 \\
+AAM-PRED-01 -- Operational Punctuality & Arrivals within tolerance & Scheduled arrival in the confirmed intent [NS; \S{}3.2]; Actual arrival (archived operational data) [PA; \S{}6.1.2, \S{}4.3.4] & C1 \\
+AAM-SAF-01 -- Safety Occurrence Rate by Severity & Safety occurrences & Off-nominal event notifications [NS; \S{}4.4.2, \S{}4.3.1]; Exposure (completed operations) [PA; \S{}4.3.4]; Severity classification [NA] & C2 \\
+AAM-SAF-02 -- Ground Third-Party Risk & Ground risk exposure & Population and ground exposure data, risk model [NA]; Flight tracks [PA; \S{}6.1.2] & C3 \\
+AAM-SEC-01 -- Cybersecurity Compromise Rate & Cybersecurity compromises & Record of cyber incidents [NA; \S{}5] & C3 \\
+AAM-SEC-02 -- Privacy Incident Rate & Privacy incidents & Record of privacy incidents [NA] & C3 \\
+\bottomrule
+\end{tabularx}
+\end{table*}

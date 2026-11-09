@@ -1,0 +1,49 @@
+% Figure environments for the synthetic-data experiments (article 2).
+% Preamble (once):
+%   \usepackage{pgfplots}
+%   \pgfplotsset{compat=1.17}
+%   \usepgfplotslibrary{groupplots}
+%   \input{figures/pgfstyle.tex}
+% Each figure \inputs its TikZ source, so the text uses the paper's own font. To use the prebuilt
+% standalone PDFs instead, replace \input{figures/<name>.tex} with
+% \includegraphics[width=\columnwidth]{figures/<name>.pdf}.
+
+\begin{figure}[!t]
+\centering
+\input{figures/fig_E2a_demand.tex}
+\caption{Sensitivity of the prioritized KPI candidates to demand under the synthetic base-case
+specification ($\tau = 60$\,s and $\Delta = 5$\,min for UTM; $\tau = 5$\,min and $\Delta = 10$\,min
+for AAM). Points are means of 30 replications; bars are 95\% confidence intervals. The dotted line marks
+the base case. Values characterize the synthetic model and do not constitute empirical validation.}
+\label{fig:e2a}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\input{figures/fig_E2b_tau_delta.tex}
+\caption{Sensitivity to the measurement specification. The same base-case logs are re-measured with each
+value of the tolerance $\tau$ (predictability candidates) and of the shift window $\Delta$ (capacity
+candidates); the dotted line marks the proposed value. Means of 30 replications with 95\% confidence
+intervals. In the AAM base case, a tolerance of 10\,min or more drives AAM-PRED-01 towards saturation.}
+\label{fig:e2b}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\input{figures/fig_E4_tradeoff.tex}
+\caption{Capacity--predictability trade-off under an operational lever: (a) the separation buffer between
+UTM operational intents sharing an airspace volume (0--240\,s); (b) the schedule buffer before the next AAM
+departure (0--10\,min). Labels mark the end values of each sweep. Means of 30 replications with 95\%
+confidence intervals on both axes.}
+\label{fig:e4}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\input{figures/fig_E5_federation.tex}
+\caption{Effect of federated information exchange on the UTM candidates in the base case (120 operational
+intents/h): (a) UTM-CAP-01, (b) UTM-PRED-01, and (c) undetected strategic conflicts per run, as a function
+of the probability that sharing an accepted operational intent with another USS fails. The dotted line
+marks a single USS. Means of 30 replications with 95\% confidence intervals.}
+\label{fig:e5}
+\end{figure}

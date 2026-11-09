@@ -1,0 +1,28 @@
+% E1 calculability matrix (UTM). Requires: booktabs, tabularx, array (as in article 1).
+\begin{table*}[!t]
+\caption{Calculability of the UTM candidate KPIs from data defined in the FAA UTM ConOps v2.0. Source classes: NS, network-shared; PA, provider-archived; IH, internally held by an operator or a single provider; NA, not addressed. C1: every input is NS or PA; C2: the principal quantity is NS or PA but another input is IH or NA; C3: the principal quantity is IH or NA. Inputs are author-derived from the Measurement Constructs; section references are to the UTM ConOps v2.0. The classification is analytical and has not been externally reviewed.}
+\label{tab:calc-utm}
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}X>{\centering\arraybackslash}p{0.035\textwidth}@{}}
+\toprule
+\textbf{Candidate KPI} & \textbf{Principal quantity} & \textbf{Inputs [source class; ConOps section]} & \textbf{Calc.} \\
+\midrule
+UTM-AE-01 -- Equitable Access Gap & Accommodation outcome per eligible user group & Outcome of shared operation intents (Accepted state) [NS; \S{}2.4.4, \S{}3.2]; Requested demand per user group (plans not shared) [IH; \S{}2.4.4, \S{}3.2]; User-group attribute of each operator [NA; \S{}2.7.3] & C2 \\
+UTM-CAP-01 -- Demand Accommodation Rate & Accepted operation intents & Operation intents shared with the USS Network (Accepted state) [NS; \S{}2.4.4, \S{}3.2]; Valid demand, including plans never shared [IH; \S{}2.4.4, \S{}3.2]; Requested time, for the shift window [IH; \S{}3.2] & C2 \\
+UTM-CE-01 -- UTM Service Cost per Managed Operation & Attributable UTM service cost & Cost of USS and FIMS services [NA; \S{}1.1, \S{}2.2]; Managed operations [PA; \S{}2.3.2, App. C] & C3 \\
+UTM-EFF-01 -- UTM-Attributable Operational Delay & Actual operation timing & Actual start and end (4D position tracks) [PA; \S{}2.7.2]; Requested time before de-confliction [IH; \S{}3.2]; Reference (unconstrained) condition [NA] & C2 \\
+UTM-EFF-02 -- UTM-Induced Trajectory Extension & Actual flight path length & 4D position tracks and reroute changes to intent [PA; \S{}2.7.2]; Nominal 4D path before de-confliction [IH; \S{}3.2]; Reference (unconstrained) path [NA] & C2 \\
+UTM-ENV-01 -- UTM-Induced Energy Penalty & Actual energy of UTM-affected operations & Endurance or fuel levels (optional report to the USS) [IH; \S{}2.7.1]; Reference energy [NA] & C3 \\
+UTM-FLEX-01 -- Successful Replanning Rate & Successful in-flight intent updates & In-flight intent updates and reroute changes [PA; \S{}2.4.6, \S{}2.7.2, App. D]; Operation outcome after replanning (Closed state) [PA; \S{}3.2] & C1 \\
+UTM-FLEX-02 -- Degraded-Service Continuity Rate & Operations continued under degradation & Operation outcome (Closed state) [PA; \S{}3.2]; Record of USS service degradation events [NA; \S{}2.7.2, App. E] & C2 \\
+UTM-GI-01 -- Successful Operational Information Exchange Rate & Successful USS-USS and USS-FIMS exchanges & Exchange attempts and results (provider system logs) [IH; \S{}2.3.2, App. C]; Latency, message loss, API success, information age (diagnostics) [IH] & C3 \\
+UTM-PART-01 -- Effective Stakeholder Participation Rate & Effective participation in UTM processes & Participation records [NA; \S{}2.4.2, App. A] & C3 \\
+UTM-PRED-01 -- Operation-Time Predictability Rate & Operations starting within tolerance & Planned start: entry time of the first Operation Volume [NS; \S{}2.7.1, \S{}3.2]; Actual start: flight data sent to the USS, archived as 4D tracks [PA; \S{}3.2, \S{}2.7.2] & C1 \\
+UTM-SAF-01 -- Separation-Safety Event Rate & Separation-related safety events & Non-Conforming and Rogue states, off-nominal event records [NS; \S{}3.2, \S{}2.7.2]; Incident reports to the FAA via FIMS [PA; \S{}2.7.1, App. E]; Exposure (flight hours from 4D tracks) [PA; \S{}2.7.2]; Event taxonomy and severity (e.g., loss of well clear) [NA] & C2 \\
+UTM-SAF-02 -- UTM-Influenced Ground Third-Party Risk & Ground risk exposure & Population and ground exposure data [NA; App. D]; Risk model [IH; \S{}2.4.6]; 4D position tracks [PA; \S{}2.7.2] & C3 \\
+UTM-SEC-01 -- Security Compromise Rate & Security compromises & Record of cyber or security incidents [NA; \S{}2.7.2]; Exposure (operations) [PA; App. C] & C3 \\
+\bottomrule
+\end{tabularx}
+\end{table*}

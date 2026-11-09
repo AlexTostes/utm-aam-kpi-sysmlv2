@@ -1,0 +1,27 @@
+% Requires: \usepackage{pgfplots} \pgfplotsset{compat=1.17} \usepgfplotslibrary{groupplots}
+% Style follows the article-1 figures: black, 0.6 pt strokes, \footnotesize, no colour.
+\begin{tikzpicture}
+\begin{groupplot}[a2, height=4.0cm, group style={group size=4 by 1, horizontal sep=0.9cm},
+  width=0.27\linewidth]
+\nextgroupplot[xlabel={Tolerance $\tau$ (min)}, ymin=0, ymax=118, ytick={0,25,50,75,100}, ylabel={KPI value (\%)},
+  title={(a) UTM, UTM-PRED-01}, title style={at={(0,1)}, anchor=south west, font=\footnotesize},
+  nodes near coords, point meta=explicit symbolic, every node near coord/.append style={font=\scriptsize, anchor=south, yshift=1pt}]
+\addplot[predS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e, meta=lab] {figures/data/E2b_UTM_tau.dat};
+\draw[densely dotted, line width=0.6pt] (axis cs:1,0) -- (axis cs:1,118);
+\nextgroupplot[xlabel={Shift window $\Delta$ (min)}, ymin=0, ymax=118, ytick={0,25,50,75,100},
+  title={(b) UTM, UTM-CAP-01}, title style={at={(0,1)}, anchor=south west, font=\footnotesize},
+  nodes near coords, point meta=explicit symbolic, every node near coord/.append style={font=\scriptsize, anchor=south, yshift=1pt}]
+\addplot[capS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e, meta=lab] {figures/data/E2b_UTM_delta.dat};
+\draw[densely dotted, line width=0.6pt] (axis cs:5,0) -- (axis cs:5,118);
+\nextgroupplot[xlabel={Tolerance $\tau$ (min)}, ymin=0, ymax=118, ytick={0,25,50,75,100},
+  title={(c) AAM, AAM-PRED-01}, title style={at={(0,1)}, anchor=south west, font=\footnotesize},
+  nodes near coords, point meta=explicit symbolic, every node near coord/.append style={font=\scriptsize, anchor=south, yshift=1pt}]
+\addplot[predS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e, meta=lab] {figures/data/E2b_AAM_tau.dat};
+\draw[densely dotted, line width=0.6pt] (axis cs:5,0) -- (axis cs:5,118);
+\nextgroupplot[xlabel={Shift window $\Delta$ (min)}, ymin=0, ymax=118, ytick={0,25,50,75,100},
+  title={(d) AAM, AAM-CAP-01}, title style={at={(0,1)}, anchor=south west, font=\footnotesize},
+  nodes near coords, point meta=explicit symbolic, every node near coord/.append style={font=\scriptsize, anchor=south, yshift=1pt}]
+\addplot[capS, error bars/.cd, y dir=both, y explicit] table[x=x, y=y, y error=e, meta=lab] {figures/data/E2b_AAM_delta.dat};
+\draw[densely dotted, line width=0.6pt] (axis cs:10,0) -- (axis cs:10,118);
+\end{groupplot}
+\end{tikzpicture}

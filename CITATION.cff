@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this material, please cite the paper below and the archived release of this repository."
+title: "UTM and AAM KPI candidates in SysML v2: model, calculability analysis and synthetic data"
+type: software
+authors:
+  - family-names: Tostes
+    given-names: Alex Sandro Mendes
+    affiliation: "Instituto Tecnológico de Aeronáutica (ITA)"
+  - family-names: Pleffken
+    given-names: Daniel Rondon
+    affiliation: "Embry-Riddle Aeronautical University (ERAU)"
+  - family-names: Cerqueira
+    given-names: Christopher Shneider
+    affiliation: "Instituto Tecnológico de Aeronáutica (ITA)"
+repository-code: "https://github.com/AlexTostes/utm-aam-kpi-sysmlv2"
+license: [MIT, CC-BY-4.0]
+version: "1.0.0"
+date-released: "2026-11-09"
+keywords: [SysML v2, MBSE, UTM, AAM, UAM, key performance indicators, synthetic data]
+preferred-citation:
+  type: article
+  title: "From Candidate KPIs to Computable Indicators: A SysML v2 Model of UTM and AAM Performance Anchored in the FAA Concepts of Operations"
+  authors:
+    - family-names: Tostes
+      given-names: Alex Sandro Mendes
+    - family-names: Pleffken
+      given-names: Daniel Rondon
+    - family-names: Cerqueira
+      given-names: Christopher Shneider
+  journal: "IEEE Access"
+  status: submitted
+  year: 2026
