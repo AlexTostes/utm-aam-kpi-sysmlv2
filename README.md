@@ -1,5 +1,7 @@
 # From Candidate KPIs to Computable Indicators: UTM and AAM performance in SysML v2
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24091466.svg)](https://doi.org/10.5281/zenodo.24091466)
+
 Model, code and data for the paper *"From Candidate KPIs to Computable Indicators: A SysML v2 Model of UTM
 and AAM Performance Anchored in the FAA Concepts of Operations"* (A. S. M. Tostes, D. R. Pleffken and
 C. S. Cerqueira; submitted to *IEEE Access*).
@@ -73,8 +75,8 @@ references in the paper.
 
 ## Citation
 
-See `CITATION.cff`. Please cite the paper and, for this material, the archived release (DOI in the badge once
-the release is archived on Zenodo).
+See `CITATION.cff`. Please cite the paper and, for this material, the archived release v1.0.0:
+https://doi.org/10.5281/zenodo.24091466
 
 ## License
 

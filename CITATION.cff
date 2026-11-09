@@ -15,6 +15,7 @@ authors:
 repository-code: "https://github.com/AlexTostes/utm-aam-kpi-sysmlv2"
 license: [MIT, CC-BY-4.0]
 version: "1.0.0"
+doi: "10.5281/zenodo.24091466"
 date-released: "2026-11-09"
 keywords: [SysML v2, MBSE, UTM, AAM, UAM, key performance indicators, synthetic data]
 preferred-citation:
