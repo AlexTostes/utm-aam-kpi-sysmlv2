@@ -3,7 +3,8 @@ package AAM_Selected {
      * AAM-CAP-01 (Integrated Demand Accommodation Rate) and AAM-PRED-01 (Operational Punctuality).
      * Evaluated within the scope of the FAA UAM ConOps v2.0 (UAM as the urban subset of AAM).
      * Only the elements needed to compute the two KPIs are modeled (minimum-sufficiency criterion).
-     * Formulas and parameters are PROPOSED for article 2. */
+     * Both candidates refine the operational definitions of article 1 (accommodated valid requests / valid
+     * requests; arrivals within tau = 5 min of the planned time) with explicit parameters. */
     private import ScalarValues::*;
     private import ICAO_KPAs::*;
     private import KPI_Taxonomy::*;
@@ -123,37 +124,44 @@ package AAM_Selected {
     calc def <'AAM-CAP-01'> IntegratedDemandAccommodationRate :> AccommodationRate {
         doc /* accommodated = valid requests with outcome Confirmed (pad, charge, aircraft and corridor all
          * available) and scheduledDeparture - requestedDeparture no greater than Delta; validDemand =
-         * valid requests in the period. PROPOSED. */
+         * valid requests in the period. Refines the operational definition of article 1 with Delta. */
         @CandidateKPI {
             code = "AAM-CAP-01";
             domain = Domain::AAM;
             measurementConstruct = "Integrated Demand Accommodation";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::ProposedInThisStudy;
+            maturity = Operationalization::RefinedInThisStudy;
         }
     }
     calc def <'AAM-PRED-01'> OperationalPunctuality :> TemporalConformanceRate {
         doc /* withinTolerance = completed flights with |actualArrival - scheduledArrival| no greater
-         * than tau; completed = flights with a record in the period. PROPOSED. */
+         * than tau; completed = flights with a record in the period. Operational definition of article 1
+         * (tau = 5 min) with tau and the period as explicit parameters. */
         @CandidateKPI {
             code = "AAM-PRED-01";
             domain = Domain::AAM;
             measurementConstruct = "Temporal Predictability";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::ProposedInThisStudy;
+            maturity = Operationalization::RefinedInThisStudy;
         }
     }
 
-    // ---------- Supporting diagnostic metrics (AAM-CAP-01: article 1, Sec. 4.5) ----------
+    // ---------- Supporting diagnostic metrics (article 1) ----------
 
     calc def VertiportThroughput { doc /* Diagnostic of AAM-CAP-01. */ @SupportingDiagnosticMetric; return metricValue : Real; }
     calc def PadUtilization { doc /* Diagnostic of AAM-CAP-01. */ @SupportingDiagnosticMetric; return metricValue : Real; }
     calc def ChargingAvailability { doc /* Diagnostic of AAM-CAP-01. */ @SupportingDiagnosticMetric; return metricValue : Real; }
     calc def AirspaceConstraints { doc /* Diagnostic of AAM-CAP-01. */ @SupportingDiagnosticMetric; return metricValue : Real; }
     calc def FleetAvailability { doc /* Diagnostic of AAM-CAP-01. */ @SupportingDiagnosticMetric; return metricValue : Real; }
+    calc def MeanOperationalDelay {
+        doc /* Mean of actualArrival - scheduledArrival over completed flights. Formerly candidate AAM-EFF-02;
+         * a diagnostic of AAM-EFF-01 and AAM-PRED-01 after the redundancy screen of article 1. */
+        @SupportingDiagnosticMetric;
+        return metricValue : Real;
+    }
     calc def DelayByCause {
         doc /* Share of late arrivals per cause (charging wait, pad occupancy, corridor restriction).
-         * Diagnostic of AAM-PRED-01; proposed for article 2. */
+         * Diagnostic of AAM-PRED-01, proposed in article 2. */
         @SupportingDiagnosticMetric;
         return metricValue : Real;
     }
@@ -180,6 +188,7 @@ package AAM_Selected {
     dependency airspace_explains from AirspaceConstraints to IntegratedDemandAccommodationRate;
     dependency fleet_explains from FleetAvailability to IntegratedDemandAccommodationRate;
     dependency delay_explains from DelayByCause to OperationalPunctuality;
+    dependency meandelay_explains from MeanOperationalDelay to OperationalPunctuality;
 
     // ---------- KPI targets as verifiable requirements ----------
 

@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 OUT=_reproduce
 rm -rf "$OUT"; mkdir -p "$OUT"
 
-echo "1/4 Catalog: regenerate the 31-KPI library from the E1 source classification"
+echo "1/4 Catalog: regenerate the 30-KPI library from the E1 source classification"
 python3 tools/gen_model.py "$OUT/catalog" > /dev/null
 for f in KPI_Common KPI_UTM KPI_AAM; do cmp -s "$OUT/catalog/$f.sysml" "models/catalog/$f.sysml" && echo "   $f.sysml identical"; done
 

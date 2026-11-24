@@ -6,8 +6,12 @@ Model, code and data for the paper *"From Candidate KPIs to Computable Indicator
 and AAM Performance Anchored in the FAA Concepts of Operations"* (A. S. M. Tostes, D. R. Pleffken and
 C. S. Cerqueira; submitted to *IEEE Access*).
 
+The candidate set follows the companion article *"Deriving System-Level KPI Candidates for UTM and AAM from
+ICAO ATM Performance Areas: A Traceable Derivation Framework with External Comparison"* as resubmitted
+(14 UTM and 16 AAM candidates).
+
 The repository contains:
-- a SysML v2 library of 31 system-level KPI candidates for Unmanned Aircraft System Traffic Management (UTM)
+- a SysML v2 library of 30 system-level KPI candidates for Unmanned Aircraft System Traffic Management (UTM)
   and Advanced Air Mobility (AAM), anchored in the FAA UTM ConOps v2.0 and UAM ConOps v2.0;
 - the calculability analysis (E1), computed as a query over the model;
 - synthetic data generators and experiments (E2–E5) for four prioritized candidates;
@@ -39,7 +43,7 @@ Run `KPI_Common.ipynb` first; the other notebooks include the shared core.
 
 | Path | Content |
 |---|---|
-| `models/catalog/` | Shared core (`KPI_Common`) and the UTM (14) and AAM (17) candidate libraries, as `.sysml` and `.ipynb` |
+| `models/catalog/` | Shared core (`KPI_Common`) and the UTM (14) and AAM (16, including the privacy domain extension AAM-EXT-01) candidate libraries, as `.sysml` and `.ipynb` |
 | `models/focused/` | `UTM_Selected` and `AAM_Selected`: minimum architecture, data items with source classes, measurement parameters, the four prioritized candidates, analysis case and targets |
 | `tools/` | `gen_model.py` (generates the library), `sync_notebooks.py` (copies the `.sysml` sources into the notebooks), `lint.py` (structural check, not a substitute for the Pilot) |
 | `e1/` | `e1_from_model.py` (E1 query), `sysml_text.py` (reader of the textual notation), `build_outputs.py` (matrix and LaTeX tables), `schema_check.py` (model–code conformance), `matrix.py` (source classification with evidence, input of `gen_model.py`) |
@@ -73,10 +77,20 @@ results byte for byte. Tested with Python 3.13, numpy 2.5, pandas 3.0, scipy 1.1
 also need `pdflatex` with `pgfplots`. The FAA concepts of operations are not redistributed here; see the
 references in the paper.
 
+## Versions
+
+- **v1.1.0** (2026-11-24): aligned with the resubmitted companion article. AAM has 16 candidates: the former
+  AAM-EFF-02 (mean operational delay) is a Supporting Diagnostic Metric of AAM-EFF-01 and AAM-PRED-01, and
+  privacy is the domain-extension candidate AAM-EXT-01 (formerly AAM-SEC-02) with its own Performance Objective.
+  Performance Objectives follow the resubmitted wording. Measurement-maturity metadata now distinguishes
+  definitions given in the companion article, refined in this study, and first proposed in this study.
+  E1 is recomputed for 30 candidates (5 C1, 8 C2, 17 C3); the synthetic data and results are unchanged.
+- **v1.0.0** (2026-11-09): first release, 31 candidates. https://doi.org/10.5281/zenodo.24091466
+
 ## Citation
 
-See `CITATION.cff`. Please cite the paper and, for this material, the archived release v1.0.0:
-https://doi.org/10.5281/zenodo.24091466
+See `CITATION.cff`. Please cite the paper and, for this material, the archived release used in the paper
+(v1.1.0; its DOI is listed on the Zenodo record of this repository).
 
 ## License
 

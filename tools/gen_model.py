@@ -1,4 +1,4 @@
-"""Gera o modelo SysML v2 dos 31 KPIs candidatos (artigo 1, Tabelas 3 e 4).
+"""Gera o modelo SysML v2 dos 30 KPIs candidatos (artigo 1 ressubmetido: 14 UTM, 16 AAM).
 
 Saidas: KPI_Framework.sysml (todos os pacotes) e cells.json (um pacote por celula,
 na ordem de dependencia), usado depois para montar o notebook.
@@ -43,71 +43,91 @@ AAM_PO = {
     "AccessAndEquity": "Promote equitable and practical access to AAM transportation for the intended population.",
     "Capacity": "Accommodate transportation demand within the integrated AAM operational system.",
     "CostEffectiveness": "Provide AAM transportation with efficient use of attributable system resources.",
-    "Efficiency": "Improve end-to-end transportation efficiency while minimizing operational delay.",
+    "Efficiency": "Improve end-to-end transportation efficiency.",
     "Environment": "Limit environmental burden associated with AAM transportation and operations.",
     "Flexibility": "Maintain operational adaptability and continuity under changing or degraded conditions.",
     "GlobalInteroperability": "Enable effective operational interoperability among AAM actors, systems, and infrastructure.",
     "Participation": "Ensure meaningful engagement of relevant and affected AAM stakeholders.",
     "Predictability": "Provide predictable operational outcomes with respect to planned timing.",
     "Safety": "Maintain acceptable operational safety for AAM users and affected third parties.",
-    "Security": "Protect AAM operations, systems, information, and stakeholders against security-related harm.",
+    "Security": "Protect AAM operations, systems, and information against security compromise.",
+    "PrivacyExtension": "Protect users and affected communities against privacy harm arising from AAM operations.",
 }
 UTM_APPLIC = {k: "Applicable" for k, _ in KPAS}
 UTM_APPLIC["Environment"] = "ConditionallyApplicable"
 AAM_APPLIC = {k: "Applicable" for k, _ in KPAS}
+AAM_APPLIC["PrivacyExtension"] = "Applicable"
 
 # (codigo, nome do calc def, titulo do artigo, KPA, construto, status, operacionalizacao, padrao)
 UTM_KPIS = [
     ("UTM-AE-01", "EquitableAccessGap", "Equitable Access Gap", "AccessAndEquity", "Between-Group Access Disparity", "P", "Pending", None),
-    ("UTM-CAP-01", "DemandAccommodationRate", "Demand Accommodation Rate", "Capacity", "Demand Accommodation", "P", "ProposedInThisStudy", "AccommodationRate"),
+    ("UTM-CAP-01", "DemandAccommodationRate", "Demand Accommodation Rate", "Capacity", "Demand Accommodation", "P", "RefinedInThisStudy", "AccommodationRate"),
     ("UTM-CE-01", "ServiceCostPerManagedOperation", "UTM Service Cost per Managed Operation", "CostEffectiveness", "Unit UTM Service Cost", "P", "Pending", None),
-    ("UTM-EFF-01", "AttributableOperationalDelay", "UTM-Attributable Operational Delay", "Efficiency", "UTM-Attributable Temporal Inefficiency", "P", "Pending", None),
+    ("UTM-EFF-01", "AttributableOperationalDelay", "UTM-Attributable Operational Delay", "Efficiency", "UTM-Attributable Temporal Inefficiency", "P", "DefinedInCompanionStudy", None),
     ("UTM-EFF-02", "InducedTrajectoryExtension", "UTM-Induced Trajectory Extension", "Efficiency", "UTM-Attributable Spatial Inefficiency", "P", "Pending", None),
-    ("UTM-ENV-01", "InducedEnergyPenalty", "UTM-Induced Energy Penalty", "Environment", "UTM-Attributable Marginal Energy Burden", "C", "ConceptualFormulaInArticle1", "ENV"),
+    ("UTM-ENV-01", "InducedEnergyPenalty", "UTM-Induced Energy Penalty", "Environment", "UTM-Attributable Marginal Energy Burden", "C", "ConceptualFormulaInCompanionStudy", "ENV"),
     ("UTM-FLEX-01", "SuccessfulReplanningRate", "Successful Replanning Rate", "Flexibility", "Successful Operational Adaptation", "P", "Pending", None),
     ("UTM-FLEX-02", "DegradedServiceContinuityRate", "Degraded-Service Continuity Rate", "Flexibility", "Essential Service Continuity Under Degradation", "P", "Pending", None),
     ("UTM-GI-01", "SuccessfulInformationExchangeRate", "Successful Operational Information Exchange Rate", "GlobalInteroperability", "Fit-for-Purpose Operational Information Exchange", "P", "Pending", None),
     ("UTM-PART-01", "EffectiveStakeholderParticipationRate", "Effective Stakeholder Participation Rate", "Participation", "Effective Stakeholder Participation", "P", "Pending", None),
     ("UTM-PRED-01", "OperationTimePredictabilityRate", "Operation-Time Predictability Rate", "Predictability", "Temporal Predictability", "P", "ProposedInThisStudy", "TemporalConformanceRate"),
-    ("UTM-SAF-01", "SeparationSafetyEventRate", "Separation-Safety Event Rate", "Safety", "Separation-Related Safety Event Frequency", "P", "Pending", None),
-    ("UTM-SAF-02", "InfluencedGroundThirdPartyRisk", "UTM-Influenced Ground Third-Party Risk", "Safety", "UTM-Influenced Ground Third-Party Risk", "P", "Pending", None),
+    ("UTM-SAF-01", "SeparationSafetyEventRate", "Separation-Safety Event Rate", "Safety", "Separation-Related Safety Event Frequency", "P", "DefinedInCompanionStudy", None),
+    ("UTM-SAF-02", "InfluencedGroundThirdPartyRisk", "UTM-Influenced Ground Third-Party Risk", "Safety", "UTM-Influenced Ground Third-Party Risk", "P", "DefinedInCompanionStudy", None),
     ("UTM-SEC-01", "SecurityCompromiseRate", "Security Compromise Rate", "Security", "Operational Security Compromise Frequency", "P", "Pending", None),
 ]
 AAM_KPIS = [
-    ("AAM-AE-01", "PopulationServiceAccessibility", "Population Service Accessibility", "AccessAndEquity", "Geographic Accessibility", "P", "Pending", None),
-    ("AAM-AE-02", "AffordabilityBurdenRatio", "Affordability Burden Ratio", "AccessAndEquity", "Economic Accessibility", "P", "Pending", None),
-    ("AAM-CAP-01", "IntegratedDemandAccommodationRate", "Integrated Demand Accommodation Rate", "Capacity", "Integrated Demand Accommodation", "P", "ProposedInThisStudy", "AccommodationRate"),
+    ("AAM-AE-01", "PopulationServiceAccessibility", "Population Service Accessibility", "AccessAndEquity", "Geographic Accessibility", "P", "DefinedInCompanionStudy", None),
+    ("AAM-AE-02", "AffordabilityBurdenRatio", "Affordability Burden Ratio", "AccessAndEquity", "Economic Accessibility", "P", "DefinedInCompanionStudy", None),
+    ("AAM-CAP-01", "IntegratedDemandAccommodationRate", "Integrated Demand Accommodation Rate", "Capacity", "Integrated Demand Accommodation", "P", "RefinedInThisStudy", "AccommodationRate"),
     ("AAM-CE-01", "CostPerCompletedOperation", "Cost per Completed AAM Operation", "CostEffectiveness", "Cost per Completed Operational Output", "P", "Pending", None),
-    ("AAM-EFF-01", "DoorToDoorTravelTimeBenefit", "Door-to-Door Travel-Time Benefit", "Efficiency", "Door-to-Door Travel Efficiency", "P", "Pending", None),
-    ("AAM-EFF-02", "MeanOperationalDelay", "Mean AAM Operational Delay", "Efficiency", "Operational Delay", "P", "Pending", None),
-    ("AAM-ENV-01", "LifeCycleGHGIntensity", "Life-Cycle GHG Intensity", "Environment", "Climate Impact", "P", "Pending", None),
-    ("AAM-ENV-02", "CommunityNoiseExposure", "Community Noise Exposure", "Environment", "Community Noise Impact", "P", "Pending", None),
+    ("AAM-EFF-01", "DoorToDoorTravelTimeBenefit", "Door-to-Door Travel-Time Benefit", "Efficiency", "Door-to-Door Travel Efficiency", "P", "DefinedInCompanionStudy", None),
+    ("AAM-ENV-01", "LifeCycleGHGIntensity", "Life-Cycle GHG Intensity", "Environment", "Climate Impact", "P", "DefinedInCompanionStudy", None),
+    ("AAM-ENV-02", "CommunityNoiseExposure", "Community Noise Exposure", "Environment", "Community Noise Impact", "P", "DefinedInCompanionStudy", None),
     ("AAM-FLEX-01", "SuccessfulReplanningRate", "Successful Operational Replanning Rate", "Flexibility", "Operational Replanning", "P", "Pending", None),
     ("AAM-FLEX-02", "DegradedOperationContinuityRate", "Degraded-Operation Continuity Rate", "Flexibility", "Operational Continuity", "P", "Pending", None),
     ("AAM-GI-01", "SuccessfulInteroperabilityRate", "Successful Operational Interoperability Rate", "GlobalInteroperability", "Operational Interoperability Success", "P", "Pending", None),
     ("AAM-PART-01", "EffectiveEngagementCoverage", "Effective Stakeholder Engagement Coverage", "Participation", "Effective Engagement Coverage", "P", "Pending", None),
-    ("AAM-PRED-01", "OperationalPunctuality", "Operational Punctuality", "Predictability", "Temporal Predictability", "P", "ProposedInThisStudy", "TemporalConformanceRate"),
+    ("AAM-PRED-01", "OperationalPunctuality", "Operational Punctuality", "Predictability", "Temporal Predictability", "P", "RefinedInThisStudy", "TemporalConformanceRate"),
     ("AAM-SAF-01", "SafetyOccurrenceRateBySeverity", "Safety Occurrence Rate by Severity", "Safety", "Operational Safety Occurrence", "P", "Pending", None),
-    ("AAM-SAF-02", "GroundThirdPartyRisk", "Ground Third-Party Risk", "Safety", "Ground Third-Party Risk", "P", "Pending", None),
+    ("AAM-SAF-02", "GroundThirdPartyRisk", "Ground Third-Party Risk", "Safety", "Ground Third-Party Risk", "P", "DefinedInCompanionStudy", None),
     ("AAM-SEC-01", "CybersecurityCompromiseRate", "Cybersecurity Compromise Rate", "Security", "Cybersecurity Compromise", "P", "Pending", None),
-    ("AAM-SEC-02", "PrivacyIncidentRate", "Privacy Incident Rate", "Security", "Privacy Compromise", "P", "Pending", "EXT"),
+    ("AAM-EXT-01", "PrivacyIncidentRate", "Privacy Incident Rate", "PrivacyExtension", "Privacy Compromise", "P", "Pending", "EXT"),
 ]
 
-# Metricas diagnosticas citadas no artigo 1 (Sec. 4.5)
-UTM_DIAG = ("SuccessfulInformationExchangeRate", [
-    ("ExchangeLatency", "Latency of operational information exchange"),
-    ("MessageLoss", "Message loss"),
-    ("APICallSuccess", "API call success"),
-    ("InformationAge", "Age of operational information"),
-    ("InformationConsistency", "Consistency of shared operational information"),
-])
-AAM_DIAG = ("IntegratedDemandAccommodationRate", [
-    ("VertiportThroughput", "Vertiport throughput"),
-    ("PadUtilization", "Pad utilization"),
-    ("ChargingAvailability", "Charging availability"),
-    ("AirspaceConstraints", "Airspace constraints"),
-    ("FleetAvailability", "Fleet availability"),
-])
+# Definicoes operacionais propostas no artigo 1 ressubmetido (tabela "Proposed operational definitions")
+DEFS = {
+    "UTM-CAP-01": "accommodated valid operation intents / valid submitted operation intents; valid: conforming intent submitted within the planning horizon, not withdrawn by the operator",
+    "UTM-EFF-01": "mean of (actual - reference) operation time attributable to UTM constraints; reference: the operator's submitted preferred intent before UTM constraints were applied",
+    "UTM-SAF-01": "separation-related events by severity class per 10^4 flight hours; severity: loss of well clear, near mid-air collision, collision",
+    "UTM-SAF-02": "model-based expected third-party ground casualties per flight hour, counting only the part influenced by UTM routing (SORA ground-risk treatment)",
+    "AAM-AE-01": "share of the target population whose access time to the nearest vertiport is at most 15 min by the fastest ground mode, stratified by income band",
+    "AAM-AE-02": "representative trip fare / median daily household income in the service area, stratified by income band",
+    "AAM-CAP-01": "accommodated valid requests / valid requests; valid: within the network, operating hours and weather limits, duplicates and user cancellations excluded",
+    "AAM-EFF-01": "mean over trips of (T_ref - T_AAM) / T_ref * 100, with T_ref the door-to-door time of the best ground mode at the same time of day",
+    "AAM-PRED-01": "share of operations arriving within plus or minus tau of the planned time, tau = 5 min",
+    "AAM-ENV-01": "life-cycle greenhouse-gas emissions per passenger-kilometer, cradle-to-grave including electricity generation",
+    "AAM-ENV-02": "residents exposed above a day-evening-night level threshold (Lden, number-above events as stratification)",
+    "AAM-SAF-02": "model-based expected third-party ground casualties per flight hour (SORA ground-risk treatment)",
+}
+
+# Metricas diagnosticas citadas no artigo 1
+# (metrica, descricao, KPIs que ela explica)
+UTM_DIAG = [
+    ("ExchangeLatency", "Latency of operational information exchange", ["SuccessfulInformationExchangeRate"]),
+    ("MessageLoss", "Message loss", ["SuccessfulInformationExchangeRate"]),
+    ("APICallSuccess", "API call success", ["SuccessfulInformationExchangeRate"]),
+    ("InformationAge", "Age of operational information", ["SuccessfulInformationExchangeRate"]),
+    ("InformationConsistency", "Consistency of shared operational information", ["SuccessfulInformationExchangeRate"]),
+]
+AAM_DIAG = [
+    ("VertiportThroughput", "Vertiport throughput", ["IntegratedDemandAccommodationRate"]),
+    ("PadUtilization", "Pad utilization", ["IntegratedDemandAccommodationRate"]),
+    ("ChargingAvailability", "Charging availability", ["IntegratedDemandAccommodationRate"]),
+    ("AirspaceConstraints", "Airspace constraints", ["IntegratedDemandAccommodationRate"]),
+    ("FleetAvailability", "Fleet availability", ["IntegratedDemandAccommodationRate"]),
+    ("MeanOperationalDelay", "Mean operational delay (formerly candidate AAM-EFF-02, reclassified after the redundancy screen of article 1)",
+     ["DoorToDoorTravelTimeBenefit", "OperationalPunctuality"]),
+]
 
 STATUS = {"P": "ProvisionallyRetained", "C": "ConditionallyRetained"}
 I = "    "
@@ -133,8 +153,14 @@ cells.append(("KPI_Taxonomy", pkg("KPI_Taxonomy",
     f"{I}enum def Applicability {{ enum Applicable; enum ConditionallyApplicable; enum NotApplicable; }}",
     f"{I}enum def RetentionStatus {{ enum ProvisionallyRetained; enum ConditionallyRetained; }}",
     f"{I}enum def Operationalization {{",
-    f"{I}{I}doc /* Measurement maturity of the candidate, kept distinct from retention status (article 1). */",
-    f"{I}{I}enum ConceptualFormulaInArticle1;",
+    f"{I}{I}doc /* Measurement maturity of the candidate, kept distinct from retention status (article 1).",
+    f"{I}{I} * ConceptualFormulaInCompanionStudy: formula given in article 1; DefinedInCompanionStudy: operational",
+    f"{I}{I} * definition given in article 1; RefinedInThisStudy: definition of article 1 with tolerance, shift window and",
+    f"{I}{I} * period made explicit parameters in article 2; ProposedInThisStudy: operational definition first given in",
+    f"{I}{I} * article 2; Pending: not yet operationalized. */",
+    f"{I}{I}enum ConceptualFormulaInCompanionStudy;",
+    f"{I}{I}enum DefinedInCompanionStudy;",
+    f"{I}{I}enum RefinedInThisStudy;",
     f"{I}{I}enum ProposedInThisStudy;",
     f"{I}{I}enum Pending;",
     f"{I}}}",
@@ -213,8 +239,8 @@ cells.append(("System_Boundaries", pkg("System_Boundaries",
 
 # 4. Padroes comuns (propostos para o artigo 2)
 cells.append(("KPI_Patterns", pkg("KPI_Patterns",
-    "Common calculation patterns shared by UTM and AAM candidates. PROPOSED for article 2; "
-    "not defined in article 1.", ["ScalarValues"], [
+    "Common calculation patterns shared by UTM and AAM candidates (article 2): the accommodation and "
+    "temporal-conformance formulas behind the operational definitions of article 1, written once for both domains.", ["ScalarValues"], [
     f"{I}abstract calc def AccommodationRate {{",
     f"{I}{I}doc /* Accommodated demand over valid demand in a period and volume, in percent. */",
     f"{I}{I}in accommodated : Natural;",
@@ -234,13 +260,21 @@ cells.append(("KPI_Patterns", pkg("KPI_Patterns",
 
 def objectives(dom, pos, applic, boundary, subj):
     body = []
-    for k, t in KPAS:
+    keys = [k for k, _ in KPAS] + [k for k in pos if k not in dict(KPAS)]
+    for k in keys:
+        if k not in dict(KPAS):
+            body += [
+                f"{I}concern def {k} {{",
+                f"{I}{I}doc /* Domain extension outside the eleven ICAO reference KPAs: privacy (article 1, Sec. V-D). */",
+                f"{I}}}",
+            ]
         body += [
             f"{I}requirement def PO_{k} {{",
             f"{I}{I}doc /* {pos[k]} */",
             f"{I}{I}@KPAApplicability {{ domain = Domain::{dom}; applicability = Applicability::{applic[k]}; }}",
             f"{I}{I}subject {subj} : {boundary};",
             f"{I}{I}frame concern kpa : {k};",
+        ] + ([f"{I}{I}@DomainExtension {{ fit = TaxonomicFit::Gap; }}"] if k not in dict(KPAS) else []) + [
             f"{I}}}",
         ]
     return body
@@ -251,7 +285,8 @@ cells.append(("UTM_Objectives", pkg("UTM_Objectives",
     ["ICAO_KPAs", "KPI_Taxonomy", "System_Boundaries"],
     objectives("UTM", UTM_PO, UTM_APPLIC, "UTMSystem", "utm"))))
 cells.append(("AAM_Objectives", pkg("AAM_Objectives",
-    "AAM domain-specific Performance Objectives (article 1, Table 4).",
+    "AAM domain-specific Performance Objectives (article 1, Table 4): eleven under the reference KPAs and one "
+    "domain extension (privacy).",
     ["ICAO_KPAs", "KPI_Taxonomy", "System_Boundaries"],
     objectives("AAM", AAM_PO, AAM_APPLIC, "AAMSystem", "aam"))))
 
@@ -265,7 +300,14 @@ def kpis(dom, rows):
             body.append(f"{I}{I}doc /* {code} -- {title}. Marginal energy effect attributable to UTM-induced operational")
             body.append(f"{I}{I} * deviations relative to a reference condition; not total vehicle energy (article 1). */")
         elif pat in ("AccommodationRate", "TemporalConformanceRate"):
-            body.append(f"{I}{I}doc /* {code} -- {title}. Formula inherited from {pat}: PROPOSED for article 2. */")
+            src = (f"refines the operational definition of article 1 ({DEFS[code]}) with explicit parameters"
+                   if code in DEFS else "operational definition first given in article 2")
+            body.append(f"{I}{I}doc /* {code} -- {title}. Formula inherited from {pat}; {src}. */")
+        elif code in DEFS:
+            body.append(f"{I}{I}doc /* {code} -- {title}. Operational definition of article 1: {DEFS[code]}. */")
+        elif pat == "EXT":
+            body.append(f"{I}{I}doc /* {code} -- {title}. Domain-extension candidate (privacy), formerly AAM-SEC-02;")
+            body.append(f"{I}{I} * operationalization not yet specified. */")
         else:
             body.append(f"{I}{I}doc /* {code} -- {title}. Operationalization not yet specified. */")
         body.append(f"{I}{I}@CandidateKPI {{")
@@ -287,7 +329,7 @@ def kpis(dom, rows):
         if e1[5]:
             body.append(f"{I}{I}comment calculabilityNote /* {e1[5]} */")
         if pat == "EXT":
-            body.append(f"{I}{I}@DomainExtension {{ fit = TaxonomicFit::Provisional; }}")
+            body.append(f"{I}{I}@DomainExtension {{ fit = TaxonomicFit::Gap; }}")
         if pat == "ENV":
             body.append(f"{I}{I}in actualEnergy : Real;")
             body.append(f"{I}{I}in referenceEnergy : Real;")
@@ -302,13 +344,13 @@ cells.append(("UTM_KPIs", pkg("UTM_KPIs",
     "The 14 UTM system-level KPI candidates (article 1, Table 3).",
     ["ScalarValues", "KPI_Taxonomy", "KPI_Patterns"], kpis("UTM", UTM_KPIS))))
 cells.append(("AAM_KPIs", pkg("AAM_KPIs",
-    "The 17 AAM system-level KPI candidates (article 1, Table 4).",
+    "The 16 AAM system-level KPI candidates (article 1, Table 4), including the privacy domain extension.",
     ["ScalarValues", "KPI_Taxonomy", "KPI_Patterns"], kpis("AAM", AAM_KPIS))))
 
 
-def diags(kpi_pkg, kpi, metrics, prefix):
+def diags(kpi_pkg, metrics, prefix):
     body = []
-    for name, d in metrics:
+    for name, d, _k in metrics:
         body += [
             f"{I}calc def {name} {{",
             f"{I}{I}doc /* {d}. */",
@@ -317,17 +359,19 @@ def diags(kpi_pkg, kpi, metrics, prefix):
             f"{I}}}",
         ]
     body.append("")
-    for name, _ in metrics:
-        body.append(f"{I}dependency {prefix}_{name}_explains from {name} to {kpi_pkg}::{kpi};")
+    for name, _d, targets in metrics:
+        for kpi in targets:
+            sfx = "" if len(targets) == 1 else "_" + kpi
+            body.append(f"{I}dependency {prefix}_{name}{sfx}_explains from {name} to {kpi_pkg}::{kpi};")
     return body
 
 
 cells.append(("UTM_Diagnostics", pkg("UTM_Diagnostics",
-    "Supporting diagnostic metrics for UTM-GI-01 (article 1, Sec. 4.5).",
-    ["ScalarValues", "KPI_Taxonomy"], diags("UTM_KPIs", UTM_DIAG[0], UTM_DIAG[1], "d"))))
+    "Supporting diagnostic metrics for UTM-GI-01 (article 1).",
+    ["ScalarValues", "KPI_Taxonomy"], diags("UTM_KPIs", UTM_DIAG, "d"))))
 cells.append(("AAM_Diagnostics", pkg("AAM_Diagnostics",
-    "Supporting diagnostic metrics for AAM-CAP-01 (article 1, Sec. 4.5).",
-    ["ScalarValues", "KPI_Taxonomy"], diags("AAM_KPIs", AAM_DIAG[0], AAM_DIAG[1], "d"))))
+    "Supporting diagnostic metrics for AAM-CAP-01, AAM-EFF-01 and AAM-PRED-01 (article 1).",
+    ["ScalarValues", "KPI_Taxonomy"], diags("AAM_KPIs", AAM_DIAG, "d"))))
 
 # Rastreabilidade KPI -> PO, um pacote por dominio
 for dom, rows in (("UTM", UTM_KPIS), ("AAM", AAM_KPIS)):
@@ -348,12 +392,12 @@ GROUPS = {
 HEAD = {
     "Common": "Shared core: ICAO KPAs, classification metadata, system boundaries and common calculation patterns.",
     "UTM": "UTM domain: 11 Performance Objectives and 14 KPI candidates (article 1, Table 3), anchored in the FAA UTM ConOps v2.0. Requires KPI_Common.sysml.",
-    "AAM": "AAM domain (UAM as urban subset): 11 Performance Objectives and 17 KPI candidates (article 1, Table 4), anchored in the FAA UAM ConOps v2.0. Requires KPI_Common.sysml.",
+    "AAM": "AAM domain (UAM as urban subset): 12 Performance Objectives (one privacy domain extension) and 16 KPI candidates (article 1, Table 4), anchored in the FAA UAM ConOps v2.0. Requires KPI_Common.sysml.",
 }
 cd = dict(cells)
 for g, names in GROUPS.items():
     with open(os.path.join(OUT, f"KPI_{g}.sysml"), "w", encoding="utf-8") as f:
-        f.write(f"// KPI_{g}.sysml\n// {HEAD[g]}\n// Generated from article 1 and the E1 source classification. Formulas marked PROPOSED are for article 2.\n\n")
+        f.write(f"// KPI_{g}.sysml\n// {HEAD[g]}\n// Generated from article 1 (as resubmitted) and the E1 source classification; maturity metadata records which definitions come from article 1 and which from article 2.\n\n")
         f.write("\n\n".join(cd[n] for n in names) + "\n")
 json.dump({"cells": cells, "groups": GROUPS}, open(os.path.join(OUT, "cells.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 print(len(UTM_KPIS), len(AAM_KPIS), len(cells))

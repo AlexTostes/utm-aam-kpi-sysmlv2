@@ -3,7 +3,7 @@ import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from e1_from_model import catalog   # E1 is a query over the SysML v2 catalog
 
-CAT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "models", "catalog")
+CAT = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "models")
 def _rows(path):
     return [(r["code"], r["name"], r["principal"], [(i, c, e) for i, c, e, _ in r["inputs"]], r["calc"], r["note"])
             for r in catalog(path)]
@@ -34,7 +34,7 @@ def header(ws, row, cols):
 
 wb = Workbook()
 ws = wb.active; ws.title = "Inputs"
-ws["A1"] = "E1 calculability matrix: inputs of the 31 KPI candidates against the FAA UTM ConOps v2.0 and UAM ConOps v2.0"
+ws["A1"] = f"E1 calculability matrix: inputs of the {len(UTM) + len(AAM)} KPI candidates against the FAA UTM ConOps v2.0 and UAM ConOps v2.0"
 ws["A1"].font = Font(name=F, bold=True, size=12)
 ws["A2"] = "One row per input. Classes and the calculability rule are defined on the Legend sheet. Citations give section and printed page."
 ws["A2"].font = Font(name=F, italic=True)
@@ -73,7 +73,7 @@ ks.freeze_panes = "C2"
 
 cs = wb.create_sheet("Counts")
 cs["A1"] = "KPI candidates by calculability class"; cs["A1"].font = bold
-header(cs, 2, ["Class", "UTM", "AAM", "Total", "Share of 31"])
+header(cs, 2, ["Class", "UTM", "AAM", "Total", f"Share of {len(UTM) + len(AAM)}"])
 n = len(ROWS) + 1
 for i, c in enumerate(("C1", "C2", "C3"), start=3):
     cs.cell(row=i, column=1, value=f"{c}: {CALC[c]}").font = norm
@@ -174,7 +174,7 @@ cu = Counter(k[4] for k in UTM); ca = Counter(k[4] for k in AAM)
 ci = Counter(c for k in UTM + AAM for _, c, _ in k[3])
 summary = [r"""% Summary of E1. Requires: booktabs.
 \begin{table}[!t]
-\caption{Calculability classes of the 31 candidate KPIs (counts of candidates).}
+\caption{Calculability classes of the """ + str(len(UTM) + len(AAM)) + r""" candidate KPIs (counts of candidates).}
 \label{tab:calculability-summary}
 \centering
 \footnotesize

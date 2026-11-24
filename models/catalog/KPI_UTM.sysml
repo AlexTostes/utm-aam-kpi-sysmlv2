@@ -1,6 +1,6 @@
 // KPI_UTM.sysml
 // UTM domain: 11 Performance Objectives and 14 KPI candidates (article 1, Table 3), anchored in the FAA UTM ConOps v2.0. Requires KPI_Common.sysml.
-// Generated from article 1 and the E1 source classification. Formulas marked PROPOSED are for article 2.
+// Generated from article 1 (as resubmitted) and the E1 source classification; maturity metadata records which definitions come from article 1 and which from article 2.
 
 package UTM_Objectives {
     doc /* UTM domain-specific Performance Objectives (article 1, Table 3). */
@@ -111,13 +111,13 @@ package UTM_KPIs {
         return kpiValue : Real;
     }
     calc def <'UTM-CAP-01'> DemandAccommodationRate :> AccommodationRate {
-        doc /* UTM-CAP-01 -- Demand Accommodation Rate. Formula inherited from AccommodationRate: PROPOSED for article 2. */
+        doc /* UTM-CAP-01 -- Demand Accommodation Rate. Formula inherited from AccommodationRate; refines the operational definition of article 1 (accommodated valid operation intents / valid submitted operation intents; valid: conforming intent submitted within the planning horizon, not withdrawn by the operator) with explicit parameters. */
         @CandidateKPI {
             code = "UTM-CAP-01";
             domain = Domain::UTM;
             measurementConstruct = "Demand Accommodation";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::ProposedInThisStudy;
+            maturity = Operationalization::RefinedInThisStudy;
         }
         comment principalQuantity /* Accepted operation intents */
         attribute input1 : KPIInput {
@@ -160,13 +160,13 @@ package UTM_KPIs {
         return kpiValue : Real;
     }
     calc def <'UTM-EFF-01'> AttributableOperationalDelay {
-        doc /* UTM-EFF-01 -- UTM-Attributable Operational Delay. Operationalization not yet specified. */
+        doc /* UTM-EFF-01 -- UTM-Attributable Operational Delay. Operational definition of article 1: mean of (actual - reference) operation time attributable to UTM constraints; reference: the operator's submitted preferred intent before UTM constraints were applied. */
         @CandidateKPI {
             code = "UTM-EFF-01";
             domain = Domain::UTM;
             measurementConstruct = "UTM-Attributable Temporal Inefficiency";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::Pending;
+            maturity = Operationalization::DefinedInCompanionStudy;
         }
         comment principalQuantity /* Actual operation timing */
         attribute input1 : KPIInput {
@@ -180,11 +180,11 @@ package UTM_KPIs {
             @KPIInputRole { role = InputRole::Supporting; }
         }
         attribute input3 : KPIInput {
-            doc /* Reference (unconstrained) condition */
-            @DataSource { sourceClass = SourceClass::NotAddressed; conopsRef = "-"; }
+            doc /* Reference: the operator's preferred intent before UTM constraints (companion-study definition) */
+            @DataSource { sourceClass = SourceClass::InternallyHeld; conopsRef = "UTM §3.2, p. 37"; }
             @KPIInputRole { role = InputRole::Supporting; }
         }
-        comment calculabilityNote /* Attribution to UTM requires a counterfactual not defined in the ConOps. */
+        comment calculabilityNote /* The preferred intent that serves as reference is held by the USS and is not shared. */
         return kpiValue : Real;
     }
     calc def <'UTM-EFF-02'> InducedTrajectoryExtension {
@@ -223,7 +223,7 @@ package UTM_KPIs {
             domain = Domain::UTM;
             measurementConstruct = "UTM-Attributable Marginal Energy Burden";
             status = RetentionStatus::ConditionallyRetained;
-            maturity = Operationalization::ConceptualFormulaInArticle1;
+            maturity = Operationalization::ConceptualFormulaInCompanionStudy;
         }
         comment principalQuantity /* Actual energy of UTM-affected operations */
         attribute input1 : KPIInput {
@@ -326,7 +326,7 @@ package UTM_KPIs {
         return kpiValue : Real;
     }
     calc def <'UTM-PRED-01'> OperationTimePredictabilityRate :> TemporalConformanceRate {
-        doc /* UTM-PRED-01 -- Operation-Time Predictability Rate. Formula inherited from TemporalConformanceRate: PROPOSED for article 2. */
+        doc /* UTM-PRED-01 -- Operation-Time Predictability Rate. Formula inherited from TemporalConformanceRate; operational definition first given in article 2. */
         @CandidateKPI {
             code = "UTM-PRED-01";
             domain = Domain::UTM;
@@ -348,13 +348,13 @@ package UTM_KPIs {
         comment calculabilityNote /* The tolerance value is not specified in the ConOps. */
     }
     calc def <'UTM-SAF-01'> SeparationSafetyEventRate {
-        doc /* UTM-SAF-01 -- Separation-Safety Event Rate. Operationalization not yet specified. */
+        doc /* UTM-SAF-01 -- Separation-Safety Event Rate. Operational definition of article 1: separation-related events by severity class per 10^4 flight hours; severity: loss of well clear, near mid-air collision, collision. */
         @CandidateKPI {
             code = "UTM-SAF-01";
             domain = Domain::UTM;
             measurementConstruct = "Separation-Related Safety Event Frequency";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::Pending;
+            maturity = Operationalization::DefinedInCompanionStudy;
         }
         comment principalQuantity /* Separation-related safety events */
         attribute input1 : KPIInput {
@@ -380,13 +380,13 @@ package UTM_KPIs {
         return kpiValue : Real;
     }
     calc def <'UTM-SAF-02'> InfluencedGroundThirdPartyRisk {
-        doc /* UTM-SAF-02 -- UTM-Influenced Ground Third-Party Risk. Operationalization not yet specified. */
+        doc /* UTM-SAF-02 -- UTM-Influenced Ground Third-Party Risk. Operational definition of article 1: model-based expected third-party ground casualties per flight hour, counting only the part influenced by UTM routing (SORA ground-risk treatment). */
         @CandidateKPI {
             code = "UTM-SAF-02";
             domain = Domain::UTM;
             measurementConstruct = "UTM-Influenced Ground Third-Party Risk";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::Pending;
+            maturity = Operationalization::DefinedInCompanionStudy;
         }
         comment principalQuantity /* Ground risk exposure */
         attribute input1 : KPIInput {
@@ -431,7 +431,7 @@ package UTM_KPIs {
 }
 
 package UTM_Diagnostics {
-    doc /* Supporting diagnostic metrics for UTM-GI-01 (article 1, Sec. 4.5). */
+    doc /* Supporting diagnostic metrics for UTM-GI-01 (article 1). */
     private import ScalarValues::*;
     private import KPI_Taxonomy::*;
 

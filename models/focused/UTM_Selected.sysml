@@ -2,7 +2,8 @@ package UTM_Selected {
     doc /* Focused model for the two UTM KPIs prioritized for synthetic data in article 2:
      * UTM-CAP-01 (Demand Accommodation Rate) and UTM-PRED-01 (Operation-Time Predictability Rate).
      * Anchored in the FAA UTM ConOps v2.0. Only the elements needed to compute the two KPIs are
-     * modeled (minimum-sufficiency criterion). Formulas and parameters are PROPOSED for article 2. */
+     * modeled (minimum-sufficiency criterion). UTM-CAP-01 refines the operational definition of article 1;
+     * UTM-PRED-01 is first operationalized here. Tolerance, shift window and period are explicit parameters. */
     private import ScalarValues::*;
     private import ICAO_KPAs::*;
     private import KPI_Taxonomy::*;
@@ -101,18 +102,19 @@ package UTM_Selected {
     calc def <'UTM-CAP-01'> DemandAccommodationRate :> AccommodationRate {
         doc /* accommodated = valid intents accepted by the USS (outcome Accepted, or Withdrawn after
          * acceptance) with plannedStart - requestedStart no greater than Delta; validDemand = valid
-         * intents submitted in the period. PROPOSED. */
+         * intents submitted in the period. Refines the operational definition of article 1 (accommodated
+         * valid operation intents / valid submitted operation intents) with the shift window Delta. */
         @CandidateKPI {
             code = "UTM-CAP-01";
             domain = Domain::UTM;
             measurementConstruct = "Demand Accommodation";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::ProposedInThisStudy;
+            maturity = Operationalization::RefinedInThisStudy;
         }
     }
     calc def <'UTM-PRED-01'> OperationTimePredictabilityRate :> TemporalConformanceRate {
         doc /* withinTolerance = completed operations with |actualStart - plannedStart| no greater than tau;
-         * completed = operations with an archived record in the period. PROPOSED. */
+         * completed = operations with an archived record in the period. First operationalized in article 2. */
         @CandidateKPI {
             code = "UTM-PRED-01";
             domain = Domain::UTM;

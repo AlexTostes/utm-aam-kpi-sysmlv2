@@ -1,6 +1,6 @@
 // KPI_Common.sysml
 // Shared core: ICAO KPAs, classification metadata, system boundaries and common calculation patterns.
-// Generated from article 1 and the E1 source classification. Formulas marked PROPOSED are for article 2.
+// Generated from article 1 (as resubmitted) and the E1 source classification; maturity metadata records which definitions come from article 1 and which from article 2.
 
 package KPI_Taxonomy {
     doc /* Enumerations and metadata used to classify KPAs, performance objectives and KPI candidates (article 1: applicability, analytical status, measurement maturity, taxonomic fit). */
@@ -10,8 +10,14 @@ package KPI_Taxonomy {
     enum def Applicability { enum Applicable; enum ConditionallyApplicable; enum NotApplicable; }
     enum def RetentionStatus { enum ProvisionallyRetained; enum ConditionallyRetained; }
     enum def Operationalization {
-        doc /* Measurement maturity of the candidate, kept distinct from retention status (article 1). */
-        enum ConceptualFormulaInArticle1;
+        doc /* Measurement maturity of the candidate, kept distinct from retention status (article 1).
+         * ConceptualFormulaInCompanionStudy: formula given in article 1; DefinedInCompanionStudy: operational
+         * definition given in article 1; RefinedInThisStudy: definition of article 1 with tolerance, shift window and
+         * period made explicit parameters in article 2; ProposedInThisStudy: operational definition first given in
+         * article 2; Pending: not yet operationalized. */
+        enum ConceptualFormulaInCompanionStudy;
+        enum DefinedInCompanionStudy;
+        enum RefinedInThisStudy;
         enum ProposedInThisStudy;
         enum Pending;
     }
@@ -99,7 +105,7 @@ package System_Boundaries {
 }
 
 package KPI_Patterns {
-    doc /* Common calculation patterns shared by UTM and AAM candidates. PROPOSED for article 2; not defined in article 1. */
+    doc /* Common calculation patterns shared by UTM and AAM candidates (article 2): the accommodation and temporal-conformance formulas behind the operational definitions of article 1, written once for both domains. */
     private import ScalarValues::*;
 
     abstract calc def AccommodationRate {

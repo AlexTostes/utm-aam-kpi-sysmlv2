@@ -1,4 +1,4 @@
-"""E1 calculability matrix: data inputs of the 31 KPI candidates against the FAA ConOps.
+"""E1 calculability matrix: data inputs of the 30 KPI candidates (article 1 as resubmitted) against the FAA ConOps.
 
 Source classes (data element as described in the ConOps):
   NS  network-shared: exchanged across the USS Network / federated service network during operations
@@ -37,8 +37,8 @@ UTM = [
  ("UTM-EFF-01", "UTM-Attributable Operational Delay", "Actual operation timing", [
    ("Actual start and end (4D position tracks)", "PA", "UTM §2.7.2, pp. 30-31"),
    ("Requested time before de-confliction", "IH", "UTM §3.2, p. 37"),
-   ("Reference (unconstrained) condition", "NA", "-")],
-  "C2", "Attribution to UTM requires a counterfactual not defined in the ConOps."),
+   ("Reference: the operator's preferred intent before UTM constraints (companion-study definition)", "IH", "UTM §3.2, p. 37")],
+  "C2", "The preferred intent that serves as reference is held by the USS and is not shared."),
  ("UTM-EFF-02", "UTM-Induced Trajectory Extension", "Actual flight path length", [
    ("4D position tracks and reroute changes to intent", "PA", "UTM §2.7.2, p. 31"),
    ("Nominal 4D path before de-confliction", "IH", "UTM §3.2, p. 37"),
@@ -108,10 +108,6 @@ AAM = [
    ("Flight times (archived operational data)", "PA", "UAM §4.3.4, p. 14 (item 8)"),
    ("Reference-mode journey time", "NA", "-")],
   "C3", ""),
- ("AAM-EFF-02", "Mean AAM Operational Delay", "Actual minus scheduled event times", [
-   ("Key event times (departure, arrival) in the confirmed intent", "NS", "UAM §3.2, p. 8; §4.3.2, p. 13"),
-   ("Actual departure (automated departure acquisition) and arrival", "PA", "UAM §6.2.2.1, p. 27; §6.1.2, p. 25; §4.3.4, p. 14 (item 8)")],
-  "C1", ""),
  ("AAM-ENV-01", "Life-Cycle GHG Intensity", "Life-cycle emissions per unit of output", [
    ("Energy and life-cycle emission data", "NA", "-")],
   "C3", ""),
@@ -151,7 +147,7 @@ AAM = [
  ("AAM-SEC-01", "Cybersecurity Compromise Rate", "Cybersecurity compromises", [
    ("Record of cyber incidents", "NA", "UAM §5, p. 23 (Service Security Gateway named, no record)")],
   "C3", ""),
- ("AAM-SEC-02", "Privacy Incident Rate", "Privacy incidents", [
+ ("AAM-EXT-01", "Privacy Incident Rate", "Privacy incidents", [
    ("Record of privacy incidents", "NA", "- (privacy not addressed in the UAM ConOps)")],
   "C3", ""),
 ]

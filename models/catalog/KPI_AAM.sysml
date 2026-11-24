@@ -1,9 +1,9 @@
 // KPI_AAM.sysml
-// AAM domain (UAM as urban subset): 11 Performance Objectives and 17 KPI candidates (article 1, Table 4), anchored in the FAA UAM ConOps v2.0. Requires KPI_Common.sysml.
-// Generated from article 1 and the E1 source classification. Formulas marked PROPOSED are for article 2.
+// AAM domain (UAM as urban subset): 12 Performance Objectives (one privacy domain extension) and 16 KPI candidates (article 1, Table 4), anchored in the FAA UAM ConOps v2.0. Requires KPI_Common.sysml.
+// Generated from article 1 (as resubmitted) and the E1 source classification; maturity metadata records which definitions come from article 1 and which from article 2.
 
 package AAM_Objectives {
-    doc /* AAM domain-specific Performance Objectives (article 1, Table 4). */
+    doc /* AAM domain-specific Performance Objectives (article 1, Table 4): eleven under the reference KPAs and one domain extension (privacy). */
     private import ICAO_KPAs::*;
     private import KPI_Taxonomy::*;
     private import System_Boundaries::*;
@@ -27,7 +27,7 @@ package AAM_Objectives {
         frame concern kpa : CostEffectiveness;
     }
     requirement def PO_Efficiency {
-        doc /* Improve end-to-end transportation efficiency while minimizing operational delay. */
+        doc /* Improve end-to-end transportation efficiency. */
         @KPAApplicability { domain = Domain::AAM; applicability = Applicability::Applicable; }
         subject aam : AAMSystem;
         frame concern kpa : Efficiency;
@@ -69,27 +69,37 @@ package AAM_Objectives {
         frame concern kpa : Safety;
     }
     requirement def PO_Security {
-        doc /* Protect AAM operations, systems, information, and stakeholders against security-related harm. */
+        doc /* Protect AAM operations, systems, and information against security compromise. */
         @KPAApplicability { domain = Domain::AAM; applicability = Applicability::Applicable; }
         subject aam : AAMSystem;
         frame concern kpa : Security;
     }
+    concern def PrivacyExtension {
+        doc /* Domain extension outside the eleven ICAO reference KPAs: privacy (article 1, Sec. V-D). */
+    }
+    requirement def PO_PrivacyExtension {
+        doc /* Protect users and affected communities against privacy harm arising from AAM operations. */
+        @KPAApplicability { domain = Domain::AAM; applicability = Applicability::Applicable; }
+        subject aam : AAMSystem;
+        frame concern kpa : PrivacyExtension;
+        @DomainExtension { fit = TaxonomicFit::Gap; }
+    }
 }
 
 package AAM_KPIs {
-    doc /* The 17 AAM system-level KPI candidates (article 1, Table 4). */
+    doc /* The 16 AAM system-level KPI candidates (article 1, Table 4), including the privacy domain extension. */
     private import ScalarValues::*;
     private import KPI_Taxonomy::*;
     private import KPI_Patterns::*;
 
     calc def <'AAM-AE-01'> PopulationServiceAccessibility {
-        doc /* AAM-AE-01 -- Population Service Accessibility. Operationalization not yet specified. */
+        doc /* AAM-AE-01 -- Population Service Accessibility. Operational definition of article 1: share of the target population whose access time to the nearest vertiport is at most 15 min by the fastest ground mode, stratified by income band. */
         @CandidateKPI {
             code = "AAM-AE-01";
             domain = Domain::AAM;
             measurementConstruct = "Geographic Accessibility";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::Pending;
+            maturity = Operationalization::DefinedInCompanionStudy;
         }
         comment principalQuantity /* Population within access of the service */
         attribute input1 : KPIInput {
@@ -105,13 +115,13 @@ package AAM_KPIs {
         return kpiValue : Real;
     }
     calc def <'AAM-AE-02'> AffordabilityBurdenRatio {
-        doc /* AAM-AE-02 -- Affordability Burden Ratio. Operationalization not yet specified. */
+        doc /* AAM-AE-02 -- Affordability Burden Ratio. Operational definition of article 1: representative trip fare / median daily household income in the service area, stratified by income band. */
         @CandidateKPI {
             code = "AAM-AE-02";
             domain = Domain::AAM;
             measurementConstruct = "Economic Accessibility";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::Pending;
+            maturity = Operationalization::DefinedInCompanionStudy;
         }
         comment principalQuantity /* Fare relative to user income */
         attribute input1 : KPIInput {
@@ -122,13 +132,13 @@ package AAM_KPIs {
         return kpiValue : Real;
     }
     calc def <'AAM-CAP-01'> IntegratedDemandAccommodationRate :> AccommodationRate {
-        doc /* AAM-CAP-01 -- Integrated Demand Accommodation Rate. Formula inherited from AccommodationRate: PROPOSED for article 2. */
+        doc /* AAM-CAP-01 -- Integrated Demand Accommodation Rate. Formula inherited from AccommodationRate; refines the operational definition of article 1 (accommodated valid requests / valid requests; valid: within the network, operating hours and weather limits, duplicates and user cancellations excluded) with explicit parameters. */
         @CandidateKPI {
             code = "AAM-CAP-01";
             domain = Domain::AAM;
             measurementConstruct = "Integrated Demand Accommodation";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::ProposedInThisStudy;
+            maturity = Operationalization::RefinedInThisStudy;
         }
         comment principalQuantity /* Confirmed UAM Operational Intents */
         attribute input1 : KPIInput {
@@ -181,13 +191,13 @@ package AAM_KPIs {
         return kpiValue : Real;
     }
     calc def <'AAM-EFF-01'> DoorToDoorTravelTimeBenefit {
-        doc /* AAM-EFF-01 -- Door-to-Door Travel-Time Benefit. Operationalization not yet specified. */
+        doc /* AAM-EFF-01 -- Door-to-Door Travel-Time Benefit. Operational definition of article 1: mean over trips of (T_ref - T_AAM) / T_ref * 100, with T_ref the door-to-door time of the best ground mode at the same time of day. */
         @CandidateKPI {
             code = "AAM-EFF-01";
             domain = Domain::AAM;
             measurementConstruct = "Door-to-Door Travel Efficiency";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::Pending;
+            maturity = Operationalization::DefinedInCompanionStudy;
         }
         comment principalQuantity /* Door-to-door journey time */
         attribute input1 : KPIInput {
@@ -207,36 +217,14 @@ package AAM_KPIs {
         }
         return kpiValue : Real;
     }
-    calc def <'AAM-EFF-02'> MeanOperationalDelay {
-        doc /* AAM-EFF-02 -- Mean AAM Operational Delay. Operationalization not yet specified. */
-        @CandidateKPI {
-            code = "AAM-EFF-02";
-            domain = Domain::AAM;
-            measurementConstruct = "Operational Delay";
-            status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::Pending;
-        }
-        comment principalQuantity /* Actual minus scheduled event times */
-        attribute input1 : KPIInput {
-            doc /* Key event times (departure, arrival) in the confirmed intent */
-            @DataSource { sourceClass = SourceClass::NetworkShared; conopsRef = "UAM §3.2, p. 8; §4.3.2, p. 13"; }
-            @KPIInputRole { role = InputRole::Principal; }
-        }
-        attribute input2 : KPIInput {
-            doc /* Actual departure (automated departure acquisition) and arrival */
-            @DataSource { sourceClass = SourceClass::ProviderArchived; conopsRef = "UAM §6.2.2.1, p. 27; §6.1.2, p. 25; §4.3.4, p. 14 (item 8)"; }
-            @KPIInputRole { role = InputRole::Supporting; }
-        }
-        return kpiValue : Real;
-    }
     calc def <'AAM-ENV-01'> LifeCycleGHGIntensity {
-        doc /* AAM-ENV-01 -- Life-Cycle GHG Intensity. Operationalization not yet specified. */
+        doc /* AAM-ENV-01 -- Life-Cycle GHG Intensity. Operational definition of article 1: life-cycle greenhouse-gas emissions per passenger-kilometer, cradle-to-grave including electricity generation. */
         @CandidateKPI {
             code = "AAM-ENV-01";
             domain = Domain::AAM;
             measurementConstruct = "Climate Impact";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::Pending;
+            maturity = Operationalization::DefinedInCompanionStudy;
         }
         comment principalQuantity /* Life-cycle emissions per unit of output */
         attribute input1 : KPIInput {
@@ -247,13 +235,13 @@ package AAM_KPIs {
         return kpiValue : Real;
     }
     calc def <'AAM-ENV-02'> CommunityNoiseExposure {
-        doc /* AAM-ENV-02 -- Community Noise Exposure. Operationalization not yet specified. */
+        doc /* AAM-ENV-02 -- Community Noise Exposure. Operational definition of article 1: residents exposed above a day-evening-night level threshold (Lden, number-above events as stratification). */
         @CandidateKPI {
             code = "AAM-ENV-02";
             domain = Domain::AAM;
             measurementConstruct = "Community Noise Impact";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::Pending;
+            maturity = Operationalization::DefinedInCompanionStudy;
         }
         comment principalQuantity /* Noise exposure of the population */
         attribute input1 : KPIInput {
@@ -357,13 +345,13 @@ package AAM_KPIs {
         return kpiValue : Real;
     }
     calc def <'AAM-PRED-01'> OperationalPunctuality :> TemporalConformanceRate {
-        doc /* AAM-PRED-01 -- Operational Punctuality. Formula inherited from TemporalConformanceRate: PROPOSED for article 2. */
+        doc /* AAM-PRED-01 -- Operational Punctuality. Formula inherited from TemporalConformanceRate; refines the operational definition of article 1 (share of operations arriving within plus or minus tau of the planned time, tau = 5 min) with explicit parameters. */
         @CandidateKPI {
             code = "AAM-PRED-01";
             domain = Domain::AAM;
             measurementConstruct = "Temporal Predictability";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::ProposedInThisStudy;
+            maturity = Operationalization::RefinedInThisStudy;
         }
         comment principalQuantity /* Arrivals within tolerance */
         attribute input1 : KPIInput {
@@ -406,13 +394,13 @@ package AAM_KPIs {
         return kpiValue : Real;
     }
     calc def <'AAM-SAF-02'> GroundThirdPartyRisk {
-        doc /* AAM-SAF-02 -- Ground Third-Party Risk. Operationalization not yet specified. */
+        doc /* AAM-SAF-02 -- Ground Third-Party Risk. Operational definition of article 1: model-based expected third-party ground casualties per flight hour (SORA ground-risk treatment). */
         @CandidateKPI {
             code = "AAM-SAF-02";
             domain = Domain::AAM;
             measurementConstruct = "Ground Third-Party Risk";
             status = RetentionStatus::ProvisionallyRetained;
-            maturity = Operationalization::Pending;
+            maturity = Operationalization::DefinedInCompanionStudy;
         }
         comment principalQuantity /* Ground risk exposure */
         attribute input1 : KPIInput {
@@ -444,10 +432,11 @@ package AAM_KPIs {
         }
         return kpiValue : Real;
     }
-    calc def <'AAM-SEC-02'> PrivacyIncidentRate {
-        doc /* AAM-SEC-02 -- Privacy Incident Rate. Operationalization not yet specified. */
+    calc def <'AAM-EXT-01'> PrivacyIncidentRate {
+        doc /* AAM-EXT-01 -- Privacy Incident Rate. Domain-extension candidate (privacy), formerly AAM-SEC-02;
+         * operationalization not yet specified. */
         @CandidateKPI {
-            code = "AAM-SEC-02";
+            code = "AAM-EXT-01";
             domain = Domain::AAM;
             measurementConstruct = "Privacy Compromise";
             status = RetentionStatus::ProvisionallyRetained;
@@ -459,13 +448,13 @@ package AAM_KPIs {
             @DataSource { sourceClass = SourceClass::NotAddressed; conopsRef = "- (privacy not addressed in the UAM ConOps)"; }
             @KPIInputRole { role = InputRole::Principal; }
         }
-        @DomainExtension { fit = TaxonomicFit::Provisional; }
+        @DomainExtension { fit = TaxonomicFit::Gap; }
         return kpiValue : Real;
     }
 }
 
 package AAM_Diagnostics {
-    doc /* Supporting diagnostic metrics for AAM-CAP-01 (article 1, Sec. 4.5). */
+    doc /* Supporting diagnostic metrics for AAM-CAP-01, AAM-EFF-01 and AAM-PRED-01 (article 1). */
     private import ScalarValues::*;
     private import KPI_Taxonomy::*;
 
@@ -494,12 +483,19 @@ package AAM_Diagnostics {
         @SupportingDiagnosticMetric;
         return metricValue : Real;
     }
+    calc def MeanOperationalDelay {
+        doc /* Mean operational delay (formerly candidate AAM-EFF-02, reclassified after the redundancy screen of article 1). */
+        @SupportingDiagnosticMetric;
+        return metricValue : Real;
+    }
 
     dependency d_VertiportThroughput_explains from VertiportThroughput to AAM_KPIs::IntegratedDemandAccommodationRate;
     dependency d_PadUtilization_explains from PadUtilization to AAM_KPIs::IntegratedDemandAccommodationRate;
     dependency d_ChargingAvailability_explains from ChargingAvailability to AAM_KPIs::IntegratedDemandAccommodationRate;
     dependency d_AirspaceConstraints_explains from AirspaceConstraints to AAM_KPIs::IntegratedDemandAccommodationRate;
     dependency d_FleetAvailability_explains from FleetAvailability to AAM_KPIs::IntegratedDemandAccommodationRate;
+    dependency d_MeanOperationalDelay_DoorToDoorTravelTimeBenefit_explains from MeanOperationalDelay to AAM_KPIs::DoorToDoorTravelTimeBenefit;
+    dependency d_MeanOperationalDelay_OperationalPunctuality_explains from MeanOperationalDelay to AAM_KPIs::OperationalPunctuality;
 }
 
 package AAM_Traceability {
@@ -510,7 +506,6 @@ package AAM_Traceability {
     dependency t_AAM_CAP_01 from AAM_KPIs::IntegratedDemandAccommodationRate to AAM_Objectives::PO_Capacity;
     dependency t_AAM_CE_01 from AAM_KPIs::CostPerCompletedOperation to AAM_Objectives::PO_CostEffectiveness;
     dependency t_AAM_EFF_01 from AAM_KPIs::DoorToDoorTravelTimeBenefit to AAM_Objectives::PO_Efficiency;
-    dependency t_AAM_EFF_02 from AAM_KPIs::MeanOperationalDelay to AAM_Objectives::PO_Efficiency;
     dependency t_AAM_ENV_01 from AAM_KPIs::LifeCycleGHGIntensity to AAM_Objectives::PO_Environment;
     dependency t_AAM_ENV_02 from AAM_KPIs::CommunityNoiseExposure to AAM_Objectives::PO_Environment;
     dependency t_AAM_FLEX_01 from AAM_KPIs::SuccessfulReplanningRate to AAM_Objectives::PO_Flexibility;
@@ -521,5 +516,5 @@ package AAM_Traceability {
     dependency t_AAM_SAF_01 from AAM_KPIs::SafetyOccurrenceRateBySeverity to AAM_Objectives::PO_Safety;
     dependency t_AAM_SAF_02 from AAM_KPIs::GroundThirdPartyRisk to AAM_Objectives::PO_Safety;
     dependency t_AAM_SEC_01 from AAM_KPIs::CybersecurityCompromiseRate to AAM_Objectives::PO_Security;
-    dependency t_AAM_SEC_02 from AAM_KPIs::PrivacyIncidentRate to AAM_Objectives::PO_Security;
+    dependency t_AAM_EXT_01 from AAM_KPIs::PrivacyIncidentRate to AAM_Objectives::PO_PrivacyExtension;
 }
