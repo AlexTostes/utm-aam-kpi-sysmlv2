@@ -1,6 +1,6 @@
 # From Candidate KPIs to Computable Indicators: UTM and AAM performance in SysML v2
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24091466.svg)](https://doi.org/10.5281/zenodo.24091466)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24506400.svg)](https://doi.org/10.5281/zenodo.24506400)
 
 Model, code and data for the paper *"From Candidate KPIs to Computable Indicators: A SysML v2 Model of UTM
 and AAM Performance Anchored in the FAA Concepts of Operations"* (A. S. M. Tostes, D. R. Pleffken and
@@ -79,7 +79,7 @@ references in the paper.
 
 ## Versions
 
-- **v1.1.0** (2026-11-24): aligned with the resubmitted companion article. AAM has 16 candidates: the former
+- **v1.1.0** (2026-11-24, https://doi.org/10.5281/zenodo.24506400): aligned with the resubmitted companion article. AAM has 16 candidates: the former
   AAM-EFF-02 (mean operational delay) is a Supporting Diagnostic Metric of AAM-EFF-01 and AAM-PRED-01, and
   privacy is the domain-extension candidate AAM-EXT-01 (formerly AAM-SEC-02) with its own Performance Objective.
   Performance Objectives follow the resubmitted wording. Measurement-maturity metadata now distinguishes
@@ -90,7 +90,7 @@ references in the paper.
 ## Citation
 
 See `CITATION.cff`. Please cite the paper and, for this material, the archived release used in the paper
-(v1.1.0; its DOI is listed on the Zenodo record of this repository).
+(v1.1.0): https://doi.org/10.5281/zenodo.24506400
 
 ## License
 
